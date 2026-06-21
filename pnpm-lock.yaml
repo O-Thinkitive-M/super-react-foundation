@@ -18,6 +18,12 @@ importers:
         specifier: 5.8.2
         version: 5.8.2
 
+  packages/adapters/claude-code:
+    dependencies:
+      '@super-react/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/compiler:
     dependencies:
       '@super-react/core':
