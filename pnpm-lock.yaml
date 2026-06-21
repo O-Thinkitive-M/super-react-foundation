@@ -60,6 +60,8 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/templates: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.23.1':
