@@ -26,12 +26,25 @@ export function stateExists(projectRoot: string): boolean {
 
 export function readState(projectRoot: string): ProjectState {
   const path = statePath(projectRoot);
-  if (!existsSync(path)) {
+  if (!stateExists(projectRoot)) {
     throw new Error(
       `super-react state not found at ${path}. Run "super-react init" first.`,
     );
   }
-  return JSON.parse(readFileSync(path, "utf8")) as ProjectState;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(path, "utf8"));
+  } catch (cause) {
+    throw new Error(`super-react state at ${path} is not valid JSON.`, { cause });
+  }
+  const state = parsed as ProjectState;
+  if (state?.version !== 1) {
+    const found = (state as { version?: unknown })?.version;
+    throw new Error(
+      `super-react state at ${path} has unsupported version ${String(found)} (expected 1).`,
+    );
+  }
+  return state;
 }
 
 export function writeState(projectRoot: string, state: ProjectState): void {
