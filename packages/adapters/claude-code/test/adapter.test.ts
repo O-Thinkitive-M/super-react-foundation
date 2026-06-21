@@ -30,11 +30,13 @@ test("emitCommand matches the golden SKILL.md", () => {
 
 test("foundation-required commands embed the guard instruction", () => {
   const files = claudeCodeAdapter.emitCommand({ ...statusSpec, requiresFoundation: true });
+  assert.equal(files.length, 1);
   assert.match(files[0]!.contents, /super-react guard --requires-foundation/);
 });
 
 test("emitManifest lists all commands", () => {
   const files = claudeCodeAdapter.emitManifest([statusSpec]);
+  assert.equal(files.length, 1);
   assert.equal(files[0]?.path, ".claude/super-react.manifest.json");
   const manifest = JSON.parse(files[0]!.contents) as { commands: { id: string }[] };
   assert.equal(manifest.commands[0]?.id, "project-status");
