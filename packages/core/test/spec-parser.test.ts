@@ -49,3 +49,10 @@ test("throws on invalid phase", () => {
     /Invalid phase/,
   );
 });
+
+test("names the offending field when a list value is not a list", () => {
+  assert.throws(
+    () => parseSpec(`---\nid: x\ntitle: X\nphase: feature\ninputs: notalist\n---\nbody`),
+    /Expected a list for field "inputs"/,
+  );
+});

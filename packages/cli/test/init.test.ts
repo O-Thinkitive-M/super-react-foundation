@@ -1,7 +1,6 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInit } from "../src/commands/init.ts";
@@ -9,9 +8,15 @@ import { runGuard } from "../src/commands/guard.ts";
 import { runSync } from "../src/commands/sync.ts";
 import { readState, writeState } from "@super-react/core";
 
+const roots: string[] = [];
 function tempRoot(): string {
-  return mkdtempSync(join(tmpdir(), "sr-init-"));
+  const r = mkdtempSync(join(tmpdir(), "sr-init-"));
+  roots.push(r);
+  return r;
 }
+after(() => {
+  for (const r of roots) rmSync(r, { recursive: true, force: true });
+});
 
 test("init installs the prompt pack and writes state", () => {
   const root = tempRoot();

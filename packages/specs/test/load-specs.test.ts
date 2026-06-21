@@ -1,6 +1,19 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { loadSpecs } from "@super-react/specs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { loadSpecs, loadSpecsFrom } from "@super-react/specs";
+
+const roots: string[] = [];
+function tempRoot(): string {
+  const r = mkdtempSync(join(tmpdir(), "sr-loadspecs-"));
+  roots.push(r);
+  return r;
+}
+after(() => {
+  for (const r of roots) rmSync(r, { recursive: true, force: true });
+});
 
 test("loads and parses all spec definitions", () => {
   const specs = loadSpecs();
@@ -15,4 +28,10 @@ test("build-feature requires the foundation; project-status does not", () => {
   const status = specs.find((s) => s.id === "project-status");
   assert.equal(build?.requiresFoundation, true);
   assert.equal(status?.requiresFoundation, false);
+});
+
+test("loadSpecsFrom names the offending file when a spec is malformed", () => {
+  const dir = tempRoot();
+  writeFileSync(join(dir, "broken.spec.md"), "no frontmatter here", "utf8");
+  assert.throws(() => loadSpecsFrom(dir), /Failed to parse spec "broken\.spec\.md"/);
 });

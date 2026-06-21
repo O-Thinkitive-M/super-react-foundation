@@ -7,9 +7,20 @@ import type { CommandSpec } from "@super-react/core";
 const here = dirname(fileURLToPath(import.meta.url));
 export const SPECS_DIR = join(here, "..", "definitions");
 
-export function loadSpecs(): CommandSpec[] {
-  return readdirSync(SPECS_DIR)
+export function loadSpecsFrom(dir: string): CommandSpec[] {
+  return readdirSync(dir)
     .filter((file) => file.endsWith(".spec.md"))
     .sort()
-    .map((file) => parseSpec(readFileSync(join(SPECS_DIR, file), "utf8")));
+    .map((file) => {
+      try {
+        return parseSpec(readFileSync(join(dir, file), "utf8"));
+      } catch (cause) {
+        const message = cause instanceof Error ? cause.message : String(cause);
+        throw new Error(`Failed to parse spec "${file}": ${message}`, { cause });
+      }
+    });
+}
+
+export function loadSpecs(): CommandSpec[] {
+  return loadSpecsFrom(SPECS_DIR);
 }

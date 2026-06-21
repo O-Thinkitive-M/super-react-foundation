@@ -44,10 +44,10 @@ function requireString(data: Record<string, unknown>, key: string): string {
   return value;
 }
 
-function toStringArray(value: unknown): string[] {
+function toStringArray(value: unknown, key: string): string[] {
   if (value == null) return [];
   if (!Array.isArray(value)) {
-    throw new Error("Expected a list value in spec frontmatter.");
+    throw new Error(`Expected a list for field "${key}" in spec frontmatter.`);
   }
   return value.map((v) => String(v));
 }
@@ -70,9 +70,9 @@ export function parseSpec(raw: string): CommandSpec {
     title,
     phase: phase as Phase,
     requiresFoundation: data.requiresFoundation === true,
-    inputs: toStringArray(data.inputs),
-    produces: toStringArray(data.produces),
-    cliOps: toStringArray(data.cliOps),
+    inputs: toStringArray(data.inputs, "inputs"),
+    produces: toStringArray(data.produces, "produces"),
+    cliOps: toStringArray(data.cliOps, "cliOps"),
     nextSuggested:
       data.nextSuggested == null ? null : String(data.nextSuggested),
     body,

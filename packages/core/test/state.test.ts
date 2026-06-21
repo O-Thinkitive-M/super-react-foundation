@@ -1,13 +1,19 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultState, readState, writeState, stateExists } from "@super-react/core";
 
+const roots: string[] = [];
 function tempRoot(): string {
-  return mkdtempSync(join(tmpdir(), "sr-state-"));
+  const r = mkdtempSync(join(tmpdir(), "sr-state-"));
+  roots.push(r);
+  return r;
 }
+after(() => {
+  for (const r of roots) rmSync(r, { recursive: true, force: true });
+});
 
 test("defaultState has the expected shape", () => {
   const s = defaultState("claude-code");
