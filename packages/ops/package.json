@@ -1,0 +1,10 @@
+{
+  "name": "@super-react/ops",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": {
+    "@super-react/core": "workspace:*",
+    "@super-react/templates": "workspace:*"
+  }
+}

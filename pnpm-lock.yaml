@@ -54,6 +54,15 @@ importers:
         specifier: 2.6.1
         version: 2.6.1
 
+  packages/ops:
+    dependencies:
+      '@super-react/core':
+        specifier: workspace:*
+        version: link:../core
+      '@super-react/templates':
+        specifier: workspace:*
+        version: link:../templates
+
   packages/specs:
     dependencies:
       '@super-react/core':

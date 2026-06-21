@@ -17,7 +17,9 @@
       "@super-react/core": ["packages/core/src/index.ts"],
       "@super-react/compiler": ["packages/compiler/src/index.ts"],
       "@super-react/adapter-claude-code": ["packages/adapters/claude-code/src/index.ts"],
-      "@super-react/specs": ["packages/specs/src/index.ts"]
+      "@super-react/specs": ["packages/specs/src/index.ts"],
+      "@super-react/templates": ["packages/templates/src/index.ts"],
+      "@super-react/ops": ["packages/ops/src/index.ts"]
     }
   },
   "include": ["packages/*/src", "packages/*/test", "packages/adapters/*/src", "packages/adapters/*/test"]
