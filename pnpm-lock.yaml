@@ -38,6 +38,9 @@ importers:
       '@super-react/core':
         specifier: workspace:*
         version: link:../core
+      '@super-react/ops':
+        specifier: workspace:*
+        version: link:../ops
       '@super-react/specs':
         specifier: workspace:*
         version: link:../specs

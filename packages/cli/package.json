@@ -8,6 +8,7 @@
     "@super-react/core": "workspace:*",
     "@super-react/compiler": "workspace:*",
     "@super-react/adapter-claude-code": "workspace:*",
-    "@super-react/specs": "workspace:*"
+    "@super-react/specs": "workspace:*",
+    "@super-react/ops": "workspace:*"
   }
 }
