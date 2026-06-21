@@ -6,6 +6,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInit } from "../src/commands/init.ts";
 import { runGuard } from "../src/commands/guard.ts";
+import { runSync } from "../src/commands/sync.ts";
+import { readState, writeState } from "@super-react/core";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "sr-init-"));
@@ -30,4 +32,27 @@ test("guard blocks feature work right after init (foundation incomplete)", () =>
   runInit({ projectRoot: root, agent: "claude-code" });
   const code = runGuard({ projectRoot: root, requiresFoundation: true });
   assert.equal(code, 1);
+});
+
+test("init does not overwrite existing state", () => {
+  const root = tempRoot();
+  runInit({ projectRoot: root, agent: "claude-code" });
+  const state = readState(root);
+  state.features["billing"] = { plan: true, ui: false, api: false, tests: false, reviewed: false };
+  writeState(root, state);
+  runInit({ projectRoot: root, agent: "claude-code" });
+  assert.deepEqual(readState(root).features, {
+    billing: { plan: true, ui: false, api: false, tests: false, reviewed: false },
+  });
+});
+
+test("guard fails cleanly in an uninitialized directory", () => {
+  const root = tempRoot();
+  assert.equal(runGuard({ projectRoot: root, requiresFoundation: true }), 1);
+});
+
+test("sync writes the prompt pack", () => {
+  const root = tempRoot();
+  assert.equal(runSync({ projectRoot: root }), 0);
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
 });
