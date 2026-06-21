@@ -24,6 +24,21 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/cli:
+    dependencies:
+      '@super-react/adapter-claude-code':
+        specifier: workspace:*
+        version: link:../adapters/claude-code
+      '@super-react/compiler':
+        specifier: workspace:*
+        version: link:../compiler
+      '@super-react/core':
+        specifier: workspace:*
+        version: link:../core
+      '@super-react/specs':
+        specifier: workspace:*
+        version: link:../specs
+
   packages/compiler:
     dependencies:
       '@super-react/core':

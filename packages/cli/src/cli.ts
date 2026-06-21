@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { runInit } from "./commands/init.ts";
+import { runSync } from "./commands/sync.ts";
+import { runStatus } from "./commands/status.ts";
+import { runGuard } from "./commands/guard.ts";
+
+const { positionals, values } = parseArgs({
+  allowPositionals: true,
+  options: {
+    agent: { type: "string", default: "claude-code" },
+    "requires-foundation": { type: "boolean", default: false },
+    cwd: { type: "string", default: process.cwd() },
+  },
+});
+
+const projectRoot = values.cwd as string;
+const command = positionals[0];
+
+let code: number;
+switch (command) {
+  case "init":
+    code = runInit({ projectRoot, agent: values.agent as string });
+    break;
+  case "sync":
+    code = runSync({ projectRoot });
+    break;
+  case "status":
+    code = runStatus({ projectRoot });
+    break;
+  case "guard":
+    code = runGuard({
+      projectRoot,
+      requiresFoundation: values["requires-foundation"] as boolean,
+    });
+    break;
+  default:
+    console.error(
+      `Unknown command: ${command ?? "(none)"}\n` +
+        "Usage: super-react <init|sync|status|guard>",
+    );
+    code = 2;
+}
+process.exit(code);
