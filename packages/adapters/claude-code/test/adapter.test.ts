@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { CommandSpec } from "@super-react/core";
 import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
+import { parse as parseYaml } from "yaml";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -40,4 +41,13 @@ test("emitManifest lists all commands", () => {
   assert.equal(files[0]?.path, ".claude/super-react.manifest.json");
   const manifest = JSON.parse(files[0]!.contents) as { commands: { id: string }[] };
   assert.equal(manifest.commands[0]?.id, "project-status");
+});
+
+test("escapes special characters in frontmatter values", () => {
+  const files = claudeCodeAdapter.emitCommand({ ...statusSpec, id: "x", title: "Plan: build it now" });
+  assert.equal(files.length, 1);
+  const between = files[0]!.contents.split("---");
+  const data = parseYaml(between[1]!) as { name: string; description: string };
+  assert.equal(data.name, "super-react-x");
+  assert.equal(data.description, "Plan: build it now");
 });

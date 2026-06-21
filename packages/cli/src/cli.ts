@@ -18,27 +18,32 @@ const projectRoot = values.cwd as string;
 const command = positionals[0];
 
 let code: number;
-switch (command) {
-  case "init":
-    code = runInit({ projectRoot, agent: values.agent as string });
-    break;
-  case "sync":
-    code = runSync({ projectRoot });
-    break;
-  case "status":
-    code = runStatus({ projectRoot });
-    break;
-  case "guard":
-    code = runGuard({
-      projectRoot,
-      requiresFoundation: values["requires-foundation"] as boolean,
-    });
-    break;
-  default:
-    console.error(
-      `Unknown command: ${command ?? "(none)"}\n` +
-        "Usage: super-react <init|sync|status|guard>",
-    );
-    code = 2;
+try {
+  switch (command) {
+    case "init":
+      code = runInit({ projectRoot, agent: values.agent as string });
+      break;
+    case "sync":
+      code = runSync({ projectRoot });
+      break;
+    case "status":
+      code = runStatus({ projectRoot });
+      break;
+    case "guard":
+      code = runGuard({
+        projectRoot,
+        requiresFoundation: values["requires-foundation"] as boolean,
+      });
+      break;
+    default:
+      console.error(
+        `Unknown command: ${command ?? "(none)"}\n` +
+          "Usage: super-react <init|sync|status|guard>",
+      );
+      code = 2;
+  }
+} catch (err) {
+  console.error(`super-react: ${err instanceof Error ? err.message : String(err)}`);
+  code = 1;
 }
 process.exit(code);

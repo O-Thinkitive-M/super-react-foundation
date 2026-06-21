@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
+import { stringify as stringifyYaml } from "yaml";
 
 function renderSkill(spec: CommandSpec): string {
   const guard = spec.requiresFoundation
@@ -9,13 +10,11 @@ function renderSkill(spec: CommandSpec): string {
   const next = spec.nextSuggested
     ? `\n\n---\n**Recommended next step:** \`/${spec.nextSuggested}\`\n`
     : "\n";
-  return (
-    `---\n` +
-    `name: super-react-${spec.id}\n` +
-    `description: ${spec.title}\n` +
-    `---\n\n` +
-    `${guard}${spec.body}${next}`
-  );
+  const frontmatter = stringifyYaml({
+    name: `super-react-${spec.id}`,
+    description: spec.title,
+  });
+  return `---\n${frontmatter}---\n\n${guard}${spec.body}${next}`;
 }
 
 export const claudeCodeAdapter: AgentAdapter = {

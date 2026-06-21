@@ -49,7 +49,7 @@ export interface EmittedFile {
 
 export interface AgentAdapter {
   id: string;
-  /** Absolute directory this adapter writes into (used to clean on sync). */
+  /** Absolute directory this adapter owns (reserved for future stale-file cleanup on sync; not yet used). */
   outDir(projectRoot: string): string;
   emitCommand(spec: CommandSpec): EmittedFile[];
   emitManifest(specs: CommandSpec[]): EmittedFile[];

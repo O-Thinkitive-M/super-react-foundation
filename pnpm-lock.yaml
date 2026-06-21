@@ -23,6 +23,9 @@ importers:
       '@super-react/core':
         specifier: workspace:*
         version: link:../../core
+      yaml:
+        specifier: 2.6.1
+        version: 2.6.1
 
   packages/cli:
     dependencies:
