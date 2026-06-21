@@ -1,0 +1,16 @@
+{
+  "name": "super-react-monorepo",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test \"packages/**/test/**/*.test.ts\"",
+    "sr": "node --import tsx packages/cli/src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "tsx": "4.19.2",
+    "typescript": "5.8.2"
+  }
+}
