@@ -50,3 +50,13 @@ test("setup-project-foundation loads with scaffold+gate ops and does not itself 
   assert.equal(spec?.requiresFoundation, false);
   assert.deepEqual(spec?.cliOps, ["scaffold", "gate"]);
 });
+
+test("all feature build/update specs require the foundation and embed the guard", () => {
+  const ids = ["build-feature-ui", "build-feature-api", "update-feature", "update-feature-ui", "update-feature-api"];
+  const specs = loadSpecs();
+  for (const id of ids) {
+    const spec = specs.find((s) => s.id === id);
+    assert.equal(spec?.requiresFoundation, true, `${id} must require foundation`);
+    assert.match(spec?.body ?? "", /super-react guard --requires-foundation/, `${id} must embed the guard`);
+  }
+});
