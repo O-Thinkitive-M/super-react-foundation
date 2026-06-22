@@ -35,3 +35,12 @@ test("loadSpecsFrom names the offending file when a spec is malformed", () => {
   writeFileSync(join(dir, "broken.spec.md"), "no frontmatter here", "utf8");
   assert.throws(() => loadSpecsFrom(dir), /Failed to parse spec "broken\.spec\.md"/);
 });
+
+test("analyze-project and create-feature-plan load and are planning-phase (no foundation required)", () => {
+  const specs = loadSpecs();
+  const analyze = specs.find((s) => s.id === "analyze-project");
+  const plan = specs.find((s) => s.id === "create-feature-plan");
+  assert.equal(analyze?.requiresFoundation, false);
+  assert.equal(analyze?.nextSuggested, "setup-project-foundation");
+  assert.equal(plan?.requiresFoundation, false);
+});
