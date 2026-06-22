@@ -2,6 +2,7 @@
   "name": "super-react-monorepo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.4.0",
   "engines": { "node": ">=22.18" },
   "scripts": {
     "build": "pnpm --filter super-react build",

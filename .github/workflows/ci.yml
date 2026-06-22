@@ -15,4 +15,4 @@ jobs:
       - run: pnpm test
       - run: pnpm --filter super-react build
       - run: pnpm audit --audit-level=high
-      - run: npx --yes license-checker-rseidelsohn --production --failOn "GPL;AGPL" || true
+      - run: npx --yes license-checker-rseidelsohn --production --failOn "GPL;AGPL"
