@@ -13,6 +13,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm gen-docs && git diff --exit-code docs/commands/
       - run: pnpm --filter super-react build
       - run: pnpm audit --audit-level=high
-      - run: npx --yes license-checker-rseidelsohn --production --failOn "GPL;AGPL"
+      - run: npx --yes license-checker-rseidelsohn@5.0.1 --production --failOn "GPL;AGPL"

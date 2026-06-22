@@ -76,13 +76,15 @@ rm /path/to/packages/cli/super-react-X.Y.Z.tgz
 
 ## 5. Bump the version
 
-Edit `packages/cli/package.json`:
+Edit `packages/cli/package.json` — update the `"version"` field:
 
 ```json
 {
   "version": "X.Y.Z"
 }
 ```
+
+The package also has `"engines": { "node": ">=22.18" }` and a `"prepack"` script (`node build.mjs`) that automatically rebuilds the bundle whenever `npm pack` or `npm publish` is run. This ensures `dist/` (which is gitignored) is always fresh in the published tarball. `prepack` is a publish-time hook only — it does **not** run on consumer `npm install`.
 
 Follow semver:
 
@@ -109,11 +111,15 @@ Pushing the tag triggers the `.github/workflows/release.yml` workflow.
 
 ## 7. Release workflow (automated)
 
-The `release.yml` workflow:
+The `release.yml` workflow runs the same gates as CI before publishing:
 
 1. Checks out the tag.
-2. Runs `pnpm install && pnpm test && pnpm typecheck`.
-3. Runs `pnpm --filter super-react build`.
+2. Installs dependencies: `pnpm install --frozen-lockfile`.
+3. Runs the full quality + build gate in order:
+   - `pnpm typecheck` — tsc must exit 0
+   - `pnpm test` — full suite must pass
+   - `pnpm --filter super-react build` — bundle must build cleanly
+   - `pnpm audit --audit-level=high` — no high/critical vulnerabilities
 4. Publishes to npm with **provenance** (`--provenance`) so the package is
    verifiably linked to this repository and commit.
 

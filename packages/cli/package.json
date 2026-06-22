@@ -1,11 +1,13 @@
 {
   "name": "super-react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "bin": { "super-react": "dist/cli.js" },
   "files": ["dist", "files", "definitions", "docs"],
+  "engines": { "node": ">=22.18" },
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "prepack": "node build.mjs"
   },
   "devDependencies": {
     "@super-react/core": "workspace:*",
