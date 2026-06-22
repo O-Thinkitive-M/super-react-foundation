@@ -7,8 +7,9 @@ import { foundationDocsRoot, listFoundationDocs } from "@super-react/foundation-
 test("foundationDocsRoot exists and lists the ten core outlines, sorted", () => {
   assert.ok(existsSync(join(foundationDocsRoot(), "architecture.md")));
   const docs = listFoundationDocs();
-  assert.equal(docs.length, 10);
+  assert.equal(docs.length, 11);
   assert.ok(docs.includes("routing.md"));
   assert.ok(docs.includes("deployment.md"));
+  assert.ok(docs.includes("data-structures.md"));
   assert.deepEqual(docs, [...docs].sort());
 });

@@ -23,3 +23,9 @@ test("listTemplateFiles includes dotfiles that must be scaffolded", () => {
   assert.ok(files.includes(".gitignore"));
   assert.ok(files.includes(".nvmrc"));
 });
+
+test("listTemplateFiles includes ds/algo lib helpers", () => {
+  const files = listTemplateFiles();
+  assert.ok(files.includes("src/lib/ds/collections.ts"));
+  assert.ok(files.includes("src/lib/algo/rate.ts"));
+});

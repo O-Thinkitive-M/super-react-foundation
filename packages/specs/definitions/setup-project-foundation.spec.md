@@ -16,7 +16,7 @@ A consistent, opinionated foundation is what makes every later feature fast and 
 
 ## Steps
 1. Run `super-react scaffold`. This copies the pinned React foundation, installs dependencies, writes `FOUNDATION_COMPLETE.md`, and unlocks feature development.
-2. For each foundation outline, generate the matching `project-setup/<name>.md`, adapting it to the requirements captured by analyze-project (architecture, folder-structure, routing, authentication, state-management, api-strategy, error-handling, testing-strategy, coding-standards, deployment).
+2. For each foundation outline, generate the matching `project-setup/<name>.md`, adapting it to the requirements captured by analyze-project (architecture, folder-structure, routing, authentication, state-management, api-strategy, error-handling, testing-strategy, coding-standards, deployment, data-structures).
 3. Run `super-react gate all` and resolve anything that fails.
 4. Report "Project Foundation Complete" and that feature development is unlocked.
 
