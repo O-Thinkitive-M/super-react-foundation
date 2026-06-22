@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { foundationDocsRoot, listFoundationDocs } from "@super-react/foundation-docs";
 
-test("foundationDocsRoot exists and lists the ten core outlines, sorted", () => {
+test("foundationDocsRoot exists and lists the eleven core outlines, sorted", () => {
   assert.ok(existsSync(join(foundationDocsRoot(), "architecture.md")));
   const docs = listFoundationDocs();
   assert.equal(docs.length, 11);
