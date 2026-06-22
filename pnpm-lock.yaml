@@ -57,6 +57,8 @@ importers:
         specifier: 2.6.1
         version: 2.6.1
 
+  packages/foundation-docs: {}
+
   packages/ops:
     dependencies:
       '@super-react/core':

@@ -1,0 +1,7 @@
+{
+  "name": "@super-react/foundation-docs",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "files": ["src", "docs"]
+}

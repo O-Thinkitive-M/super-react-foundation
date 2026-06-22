@@ -44,3 +44,9 @@ test("analyze-project and create-feature-plan load and are planning-phase (no fo
   assert.equal(analyze?.nextSuggested, "setup-project-foundation");
   assert.equal(plan?.requiresFoundation, false);
 });
+
+test("setup-project-foundation loads with scaffold+gate ops and does not itself require foundation", () => {
+  const spec = loadSpecs().find((s) => s.id === "setup-project-foundation");
+  assert.equal(spec?.requiresFoundation, false);
+  assert.deepEqual(spec?.cliOps, ["scaffold", "gate"]);
+});
