@@ -22,7 +22,10 @@ export function groupBy<T, K extends PropertyKey>(items: readonly T[], key: (t: 
 /** Frequency count → Map<key, count>. */
 export function countBy<T, K extends PropertyKey>(items: readonly T[], key: (t: T) => K): Map<K, number> {
   const m = new Map<K, number>();
-  for (const it of items) m.set(key(it), (m.get(key(it)) ?? 0) + 1);
+  for (const it of items) {
+    const k = key(it);
+    m.set(k, (m.get(k) ?? 0) + 1);
+  }
   return m;
 }
 

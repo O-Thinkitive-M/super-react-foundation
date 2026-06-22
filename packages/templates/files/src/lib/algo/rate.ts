@@ -16,10 +16,10 @@ export function throttle<A extends unknown[]>(fn: (...a: A) => void, ms: number)
 
 /** Memoize a pure fn by a string key (bound by LRU to stay memory-safe). */
 export function memoize<A extends unknown[], R>(fn: (...a: A) => R, keyOf: (...a: A) => string, max = 100) {
-  const cache = new LRUCache<string, R>(max);              // from src/lib/ds/lru.ts
+  const cache = new LRUCache<string, R>(max);
   return (...a: A): R => {
-    const k = keyOf(...a); const hit = cache.get(k);
-    if (hit !== undefined) return hit;
+    const k = keyOf(...a);
+    if (cache.has(k)) return cache.get(k) as R; // distinguishes a cached `undefined` from a miss
     const v = fn(...a); cache.set(k, v); return v;
   };
 }
