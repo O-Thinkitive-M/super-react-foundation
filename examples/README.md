@@ -39,22 +39,22 @@ Running the two commands above produces the following top-level layout (no `node
 ```
 my-app/
 ├── .claude/
-│   ├── skills/                   # 15 super-react-foundation skill files (one per command)
-│   │   ├── super-react-foundation-analyze-project
-│   │   ├── super-react-foundation-build-feature
-│   │   ├── super-react-foundation-build-feature-api
-│   │   ├── super-react-foundation-build-feature-ui
-│   │   ├── super-react-foundation-connect-external-service
-│   │   ├── super-react-foundation-create-feature-plan
-│   │   ├── super-react-foundation-fix-project-issues
-│   │   ├── super-react-foundation-generate-feature-tests
-│   │   ├── super-react-foundation-project-status
-│   │   ├── super-react-foundation-review-feature
-│   │   ├── super-react-foundation-review-project-architecture
-│   │   ├── super-react-foundation-setup-project-foundation
-│   │   ├── super-react-foundation-update-feature
-│   │   ├── super-react-foundation-update-feature-api
-│   │   └── super-react-foundation-update-feature-ui
+│   ├── commands/                 # 15 slash commands (one per command, invoked as /<name>)
+│   │   ├── analyze-project.md
+│   │   ├── build-feature.md
+│   │   ├── build-feature-api.md
+│   │   ├── build-feature-ui.md
+│   │   ├── connect-external-service.md
+│   │   ├── create-feature-plan.md
+│   │   ├── fix-project-issues.md
+│   │   ├── generate-feature-tests.md
+│   │   ├── project-status.md
+│   │   ├── review-feature.md
+│   │   ├── review-project-architecture.md
+│   │   ├── setup-project-foundation.md
+│   │   ├── update-feature.md
+│   │   ├── update-feature-api.md
+│   │   └── update-feature-ui.md
 │   └── super-react-foundation.manifest.json # version + command index
 │
 ├── .super-react-foundation/
@@ -120,4 +120,4 @@ Once the foundation is in place, open your project in an AI-enabled editor (Clau
 /build-feature            ← implement it
 ```
 
-All 15 commands are documented in `.claude/skills/` and indexed in `.claude/super-react-foundation.manifest.json`.
+All 15 commands are installed in `.claude/commands/` (each invoked as `/<name>`) and indexed in `.claude/super-react-foundation.manifest.json`.

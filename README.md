@@ -8,6 +8,17 @@ No magic. No lock-in. Just a repeatable process that produces maintainable React
 
 ---
 
+## Prerequisites
+
+- **Node.js ≥ 22.18** — check with `node -v`.
+- **An AI coding agent that reads `.claude/` project commands** — Claude Code today (the v1 adapter). `init` writes the slash commands into your project; the agent runs them.
+- **A package manager** — `npm` (ships with Node) is enough to run `npx`. `pnpm ≥ 10` is recommended for the scaffolded app, but the scaffold writes its own `package.json` so any of npm/pnpm/yarn works.
+- **A project directory** — a new empty folder, or an existing React project you want to bring under the workflow.
+
+No global install, API key, or account is required to run the CLI.
+
+---
+
 ## Install
 
 **Once published to npm:**
@@ -25,12 +36,12 @@ node packages/cli/dist/cli.js init
 
 That init command:
 1. Installs the super-react-foundation CLI locally (no global install needed).
-2. Writes the agent prompt pack into your project so your AI agent knows all 15 commands.
+2. Writes 15 slash commands into `.claude/commands/` so your AI agent exposes them as `/analyze-project`, `/build-feature`, etc.
 3. Prints the status dashboard so you can see where you stand.
 
 See `RELEASE.md` for the publish steps.
 
-After init, run your first command inside your AI agent (e.g. Claude Code):
+After init, **reload your agent** so it picks up the new commands (in Claude Code: reload the window / start a new session), then run your first command:
 
 ```
 /analyze-project

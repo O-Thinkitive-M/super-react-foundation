@@ -23,13 +23,13 @@ test("init installs the prompt pack and writes state", () => {
   const code = runInit({ projectRoot: root, agent: "claude-code" });
   assert.equal(code, 0);
   assert.ok(existsSync(join(root, ".super-react-foundation", "state.json")));
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "commands", "project-status.md")));
   assert.ok(existsSync(join(root, ".claude", "super-react-foundation.manifest.json")));
-  const skill = readFileSync(
-    join(root, ".claude", "skills", "super-react-foundation-build-feature", "SKILL.md"),
+  const command = readFileSync(
+    join(root, ".claude", "commands", "build-feature.md"),
     "utf8",
   );
-  assert.match(skill, /super-react-foundation guard --requires-foundation/);
+  assert.match(command, /super-react-foundation guard --requires-foundation/);
 });
 
 test("guard blocks feature work right after init (foundation incomplete)", () => {
@@ -59,13 +59,13 @@ test("guard fails cleanly in an uninitialized directory", () => {
 test("sync writes the prompt pack", () => {
   const root = tempRoot();
   assert.equal(runSync({ projectRoot: root }), 0);
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "commands", "project-status.md")));
 });
 
-test("init installs a skill for every command in the catalog", () => {
+test("init installs a command for every spec in the catalog", () => {
   const root = tempRoot();
   runInit({ projectRoot: root, agent: "claude-code" });
-  const skillsDir = join(root, ".claude", "skills");
-  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-foundation-"));
+  const commandsDir = join(root, ".claude", "commands");
+  const installed = readdirSync(commandsDir).filter((f) => f.endsWith(".md"));
   assert.equal(installed.length, 15);
 });
