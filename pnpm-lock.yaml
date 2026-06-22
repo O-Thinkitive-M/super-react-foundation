@@ -64,6 +64,9 @@ importers:
       '@super-react/core':
         specifier: workspace:*
         version: link:../core
+      '@super-react/foundation-docs':
+        specifier: workspace:*
+        version: link:../foundation-docs
       '@super-react/templates':
         specifier: workspace:*
         version: link:../templates

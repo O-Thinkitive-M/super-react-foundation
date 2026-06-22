@@ -3,10 +3,6 @@ import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
 import { stringify as stringifyYaml } from "yaml";
 
 function renderSkill(spec: CommandSpec): string {
-  const guard = spec.requiresFoundation
-    ? "> **Before doing anything, run `super-react guard --requires-foundation`. " +
-      "If it exits non-zero, stop and show its message to the user.**\n\n"
-    : "";
   const next = spec.nextSuggested
     ? `\n\n---\n**Recommended next step:** \`/${spec.nextSuggested}\`\n`
     : "\n";
@@ -14,7 +10,7 @@ function renderSkill(spec: CommandSpec): string {
     name: `super-react-${spec.id}`,
     description: spec.title,
   });
-  return `---\n${frontmatter}---\n\n${guard}${spec.body}${next}`;
+  return `---\n${frontmatter}---\n\n${spec.body}${next}`;
 }
 
 export const claudeCodeAdapter: AgentAdapter = {

@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultState, writeState, readState } from "@super-react/core";
 import { scaffoldFoundation } from "@super-react/ops";
+import type { Exec } from "@super-react/ops";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -70,4 +71,22 @@ test("scaffold without an injected install uses the default (pnpm install) and p
     () => scaffoldFoundation({ projectRoot: root, install: async () => { throw new Error("install boom"); } }),
     /install boom/,
   );
+});
+
+test("scaffold seeds project-setup/ from the foundation-docs outlines", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  await scaffoldFoundation({ projectRoot: root, install: noInstall });
+  assert.ok(existsSync(join(root, "project-setup", "architecture.md")));
+  assert.ok(existsSync(join(root, "project-setup", "data-structures.md")));
+});
+
+test("defaultInstall runs pnpm install and throws on non-zero exit", async () => {
+  const { defaultInstall } = await import("@super-react/ops");
+  const calls: string[][] = [];
+  const ok: Exec = async (cmd, args) => { calls.push([cmd, ...args]); return { code: 0, stdout: "", stderr: "" }; };
+  await defaultInstall("/x", ok);
+  assert.deepEqual(calls[0], ["pnpm", "install"]);
+  const bad: Exec = async () => ({ code: 1, stdout: "", stderr: "boom" });
+  await assert.rejects(() => defaultInstall("/x", bad), /install failed/);
 });

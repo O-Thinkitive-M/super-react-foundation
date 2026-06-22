@@ -29,10 +29,11 @@ test("emitCommand matches the golden SKILL.md", () => {
   assert.equal(files[0]?.contents, golden);
 });
 
-test("foundation-required commands embed the guard instruction", () => {
-  const files = claudeCodeAdapter.emitCommand({ ...statusSpec, requiresFoundation: true });
-  assert.equal(files.length, 1);
-  assert.match(files[0]!.contents, /super-react guard --requires-foundation/);
+test("the adapter renders the body as-authored without injecting an extra guard header", () => {
+  const spec = { ...statusSpec, requiresFoundation: true, body: "## Steps\n1. Run `super-react guard --requires-foundation`." };
+  const out = claudeCodeAdapter.emitCommand(spec)[0]!.contents;
+  const count = out.split("super-react guard --requires-foundation").length - 1;
+  assert.equal(count, 1);
 });
 
 test("emitManifest lists all commands", () => {

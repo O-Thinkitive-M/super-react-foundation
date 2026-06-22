@@ -5,6 +5,7 @@
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
     "@super-react/core": "workspace:*",
+    "@super-react/foundation-docs": "workspace:*",
     "@super-react/templates": "workspace:*"
   }
 }
