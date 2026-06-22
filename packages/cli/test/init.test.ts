@@ -1,6 +1,6 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInit } from "../src/commands/init.ts";
@@ -60,4 +60,12 @@ test("sync writes the prompt pack", () => {
   const root = tempRoot();
   assert.equal(runSync({ projectRoot: root }), 0);
   assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
+});
+
+test("init installs a skill for every command in the catalog", () => {
+  const root = tempRoot();
+  runInit({ projectRoot: root, agent: "claude-code" });
+  const skillsDir = join(root, ".claude", "skills");
+  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-"));
+  assert.equal(installed.length, 15);
 });

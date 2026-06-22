@@ -41,3 +41,12 @@ test("gate command returns 0 when all gates pass and 1 when one fails", async ()
   });
   assert.equal(await runGateCommand({ projectRoot: root, gateArgs: ["all"], exec: failing }), 1);
 });
+
+test("fix command returns 0 when both tools pass and 1 when one fails", async () => {
+  const { runFixCommand } = await import("../src/commands/fix.ts");
+  const root = tempRoot();
+  const pass: Exec = async () => ({ code: 0, stdout: "", stderr: "" });
+  assert.equal(await runFixCommand({ projectRoot: root, exec: pass }), 0);
+  const fail: Exec = async (_c, a) => ({ code: a.includes("prettier") ? 1 : 0, stdout: "", stderr: "x" });
+  assert.equal(await runFixCommand({ projectRoot: root, exec: fail }), 1);
+});

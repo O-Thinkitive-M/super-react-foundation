@@ -40,3 +40,16 @@ test("resolveGateNames defaults to all, dedupes, and rejects unknown", () => {
   assert.deepEqual(resolveGateNames(["lint", "lint"]), ["lint"]);
   assert.throws(() => resolveGateNames(["bogus"]), /Unknown gate/);
 });
+
+test("each gate maps to its expected command", async () => {
+  const seen: Record<string, string[]> = {};
+  const exec: Exec = async (cmd, args) => {
+    seen[args[0] ?? cmd] = [cmd, ...args];
+    return { code: 0, stdout: "", stderr: "" };
+  };
+  await runGates(["lint", "types", "test", "audit"], { cwd: "/x", exec });
+  assert.deepEqual(seen["eslint"], ["npx", "eslint", "."]);
+  assert.deepEqual(seen["tsc"], ["npx", "tsc", "--noEmit"]);
+  assert.deepEqual(seen["vitest"], ["npx", "vitest", "run", "--passWithNoTests"]);
+  assert.deepEqual(seen["audit"], ["npm", "audit", "--audit-level=high"]);
+});

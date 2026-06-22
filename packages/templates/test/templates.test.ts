@@ -17,3 +17,9 @@ test("listTemplateFiles returns sorted, template-relative paths including nested
   const sorted = [...files].sort();
   assert.deepEqual(files, sorted);
 });
+
+test("listTemplateFiles includes dotfiles that must be scaffolded", () => {
+  const files = listTemplateFiles();
+  assert.ok(files.includes(".gitignore"));
+  assert.ok(files.includes(".nvmrc"));
+});

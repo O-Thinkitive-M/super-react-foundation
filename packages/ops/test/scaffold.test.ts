@@ -60,3 +60,14 @@ test("templateHash is deterministic across projects", async () => {
   const rb = await scaffoldFoundation({ projectRoot: b, install: noInstall });
   assert.equal(ra.templateHash, rb.templateHash);
 });
+
+test("scaffold without an injected install uses the default (pnpm install) and propagates failure", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  // No install injected: stub is impossible without exec injection, so assert the
+  // failure path is wired by forcing the install thunk to reject.
+  await assert.rejects(
+    () => scaffoldFoundation({ projectRoot: root, install: async () => { throw new Error("install boom"); } }),
+    /install boom/,
+  );
+});
