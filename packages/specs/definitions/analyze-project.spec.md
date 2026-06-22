@@ -19,7 +19,7 @@ Building before the requirements are understood produces rework. This command ex
 2. If none are found, ask the user: "Do you have any of: SRS, MOM, BRD, product notes, existing screens?" If the answer is no, generate `project-setup/` using a default enterprise React architecture and leave `feature-plans/` empty.
 3. From the material, extract: functional requirements, non-functional requirements, user roles, features, API requirements, security requirements, and architecture requirements.
 4. Write the architecture decisions into `project-setup/` and one `feature-plans/<feature>.md` per feature.
-5. Report "Analysis Complete", list what was created, and state that feature development is locked until the foundation is set up.
+5. Report "Analysis Complete", list what was created, and state that feature **building** is locked until the foundation is set up (planning is still allowed).
 
 ## Example
 `/analyze-project` — reads everything under `docs/` and writes `project-setup/` + `feature-plans/`.
