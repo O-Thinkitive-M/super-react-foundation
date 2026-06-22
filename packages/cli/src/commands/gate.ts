@@ -1,4 +1,4 @@
-import { type Exec, nodeExec, resolveGateNames, runGates } from "@super-react/ops";
+import { type Exec, nodeExec, resolveGateNames, runGates } from "@super-react-foundation/ops";
 
 export async function runGateCommand(opts: {
   projectRoot: string;

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultState, evaluateGuard } from "@super-react/core";
+import { defaultState, evaluateGuard } from "@super-react-foundation/core";
 
 test("blocks feature work before foundation is complete", () => {
   const state = defaultState("claude-code");

@@ -1,4 +1,4 @@
-# super-react — Example Walkthrough
+# super-react-foundation — Example Walkthrough
 
 This document shows how to reproduce the full foundation from scratch using the published CLI.
 
@@ -17,17 +17,17 @@ This document shows how to reproduce the full foundation from scratch using the 
 # 1. Create and enter a new project directory
 mkdir my-app && cd my-app
 
-# 2. Install the prompt pack + write .super-react/state.json
-npx super-react init
+# 2. Install the prompt pack + write .super-react-foundation/state.json
+npx super-react-foundation init
 
 # 3. Scaffold the app skeleton (pnpm install runs automatically)
-npx super-react scaffold
+npx super-react-foundation scaffold
 ```
 
 > **Offline / CI — skip the install step:**
 >
 > ```bash
-> npx super-react scaffold --no-install
+> npx super-react-foundation scaffold --no-install
 > ```
 
 ---
@@ -39,25 +39,25 @@ Running the two commands above produces the following top-level layout (no `node
 ```
 my-app/
 ├── .claude/
-│   ├── skills/                   # 15 super-react skill files (one per command)
-│   │   ├── super-react-analyze-project
-│   │   ├── super-react-build-feature
-│   │   ├── super-react-build-feature-api
-│   │   ├── super-react-build-feature-ui
-│   │   ├── super-react-connect-external-service
-│   │   ├── super-react-create-feature-plan
-│   │   ├── super-react-fix-project-issues
-│   │   ├── super-react-generate-feature-tests
-│   │   ├── super-react-project-status
-│   │   ├── super-react-review-feature
-│   │   ├── super-react-review-project-architecture
-│   │   ├── super-react-setup-project-foundation
-│   │   ├── super-react-update-feature
-│   │   ├── super-react-update-feature-api
-│   │   └── super-react-update-feature-ui
-│   └── super-react.manifest.json # version + command index
+│   ├── skills/                   # 15 super-react-foundation skill files (one per command)
+│   │   ├── super-react-foundation-analyze-project
+│   │   ├── super-react-foundation-build-feature
+│   │   ├── super-react-foundation-build-feature-api
+│   │   ├── super-react-foundation-build-feature-ui
+│   │   ├── super-react-foundation-connect-external-service
+│   │   ├── super-react-foundation-create-feature-plan
+│   │   ├── super-react-foundation-fix-project-issues
+│   │   ├── super-react-foundation-generate-feature-tests
+│   │   ├── super-react-foundation-project-status
+│   │   ├── super-react-foundation-review-feature
+│   │   ├── super-react-foundation-review-project-architecture
+│   │   ├── super-react-foundation-setup-project-foundation
+│   │   ├── super-react-foundation-update-feature
+│   │   ├── super-react-foundation-update-feature-api
+│   │   └── super-react-foundation-update-feature-ui
+│   └── super-react-foundation.manifest.json # version + command index
 │
-├── .super-react/
+├── .super-react-foundation/
 │   └── state.json                # project state (analyzed/foundation flags, feature list)
 │
 ├── project-setup/                # 11 architecture decision docs (markdown)
@@ -120,4 +120,4 @@ Once the foundation is in place, open your project in an AI-enabled editor (Clau
 /build-feature            ← implement it
 ```
 
-All 15 commands are documented in `.claude/skills/` and indexed in `.claude/super-react.manifest.json`.
+All 15 commands are documented in `.claude/skills/` and indexed in `.claude/super-react-foundation.manifest.json`.

@@ -15,8 +15,8 @@ Assess overall project quality and report problems with recommendations.
 Periodic architecture review catches drift, duplication, and dead code before they compound.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
-2. Run `super-react gate audit`.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
+2. Run `super-react-foundation gate audit`.
 3. Check: folder structure, dependency rules, code duplication, naming conventions, architecture violations, dead code, and unused files.
 4. Produce a report with concrete, prioritized recommendations.
 

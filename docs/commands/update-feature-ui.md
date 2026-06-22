@@ -11,7 +11,7 @@ Update only the frontend of an existing feature.
 Sometimes only the UI changes; this keeps the change scoped.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Apply the UI change only. Leave the API layer untouched.
 

@@ -1,8 +1,8 @@
-# super-react
+# super-react-foundation
 
 > Guided React engineering — one command per step, zero drift.
 
-**super-react** is a prompt pack and CLI toolkit that turns an AI coding agent into a structured React development partner. Instead of freeform chat, every action follows a strict, auditable workflow: analyze requirements → scaffold a production foundation → build features one at a time → integrate external services → review and test. The agent always knows where the project stands and what to do next.
+**super-react-foundation** is a prompt pack and CLI toolkit that turns an AI coding agent into a structured React development partner. Instead of freeform chat, every action follows a strict, auditable workflow: analyze requirements → scaffold a production foundation → build features one at a time → integrate external services → review and test. The agent always knows where the project stands and what to do next.
 
 No magic. No lock-in. Just a repeatable process that produces maintainable React apps.
 
@@ -12,18 +12,19 @@ No magic. No lock-in. Just a repeatable process that produces maintainable React
 
 **Once published to npm:**
 ```bash
-npx super-react init
+npx super-react-foundation init
 ```
+> Or install globally with `npm i -g super-react-foundation`, then run `super-react-foundation` anywhere.
 
 **Pre-release (today):** build from this repo and run the packed CLI:
 ```bash
-pnpm install && pnpm --filter super-react build
+pnpm install && pnpm --filter super-react-foundation build
 # then run the bundled CLI:
 node packages/cli/dist/cli.js init
 ```
 
 That init command:
-1. Installs the super-react CLI locally (no global install needed).
+1. Installs the super-react-foundation CLI locally (no global install needed).
 2. Writes the agent prompt pack into your project so your AI agent knows all 15 commands.
 3. Prints the status dashboard so you can see where you stand.
 
@@ -39,7 +40,7 @@ After init, run your first command inside your AI agent (e.g. Claude Code):
 
 ## The workflow
 
-super-react enforces a strict phase order. Each command is a gate — feature commands are locked until the foundation is in place.
+super-react-foundation enforces a strict phase order. Each command is a gate — feature commands are locked until the foundation is in place.
 
 ```
 analyze → setup-foundation → build / update features → integrate → review / test
@@ -48,7 +49,7 @@ analyze → setup-foundation → build / update features → integrate → revie
 | Phase | What happens |
 |-------|-------------|
 | **analyze** | Read your requirements (SRS, BRD, Figma notes, existing code). Write `project-setup/` and `feature-plans/`. |
-| **foundation** | Scaffold the full React app (`super-react scaffold`). Locked until requirements are analyzed. |
+| **foundation** | Scaffold the full React app (`super-react-foundation scaffold`). Locked until requirements are analyzed. |
 | **feature** | Build or update UI, API layer, and feature plans one feature at a time. Locked until foundation is ready. |
 | **integrate** | Wire external services (auth, payments, third-party APIs). |
 | **quality** | Review features, review architecture, generate and run tests, fix issues. |
@@ -61,7 +62,7 @@ analyze → setup-foundation → build / update features → integrate → revie
 Run `/project-status` at any time to see where the project stands:
 
 ```
-================ super-react ================
+================ super-react-foundation ================
   guided React engineering
 --------------------------------------------
 PROJECT HEALTH
@@ -108,18 +109,18 @@ The dashboard is the single source of truth. The agent shows it verbatim — it 
 
 - **Self-contained bundle.** The CLI and prompt pack ship as a single pinned artifact. No runtime plugin loading, no remote fetches at agent runtime.
 - **Zero runtime dependencies** beyond Node.js itself. The dependency tree is minimal and fully audited at release time.
-- **No telemetry.** super-react does not phone home, track usage, or collect any data. It writes only to your local project.
+- **No telemetry.** super-react-foundation does not phone home, track usage, or collect any data. It writes only to your local project.
 - **Pinned and audited.** All dependencies are locked in `pnpm-lock.yaml`. Use `pnpm audit` to verify the supply chain at any time.
 
 ---
 
 ## Agent compatibility
 
-super-react ships with a **Claude Code** adapter today. The adapter layer is designed to be extensible: new adapters can be dropped in without changing the command specs or the CLI. If you use a different agent, the prompt pack and workflow logic stay identical — only the file format the agent reads changes.
+super-react-foundation ships with a **Claude Code** adapter today. The adapter layer is designed to be extensible: new adapters can be dropped in without changing the command specs or the CLI. If you use a different agent, the prompt pack and workflow logic stay identical — only the file format the agent reads changes.
 
 ---
 
-## Developing super-react itself
+## Developing super-react-foundation itself
 
 ```bash
 pnpm install          # install all workspace dependencies

@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { templateRoot, listTemplateFiles } from "@super-react/templates";
+import { templateRoot, listTemplateFiles } from "@super-react-foundation/templates";
 
 test("templateRoot points at an existing files directory", () => {
   assert.ok(existsSync(templateRoot()));

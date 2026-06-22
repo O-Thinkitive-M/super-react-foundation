@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { defaultState, writeState, readState } from "@super-react/core";
-import { scaffoldFoundation } from "@super-react/ops";
-import type { Exec } from "@super-react/ops";
+import { defaultState, writeState, readState } from "@super-react-foundation/core";
+import { scaffoldFoundation } from "@super-react-foundation/ops";
+import type { Exec } from "@super-react-foundation/ops";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -82,7 +82,7 @@ test("scaffold seeds project-setup/ from the foundation-docs outlines", async ()
 });
 
 test("defaultInstall runs pnpm install and throws on non-zero exit", async () => {
-  const { defaultInstall } = await import("@super-react/ops");
+  const { defaultInstall } = await import("@super-react-foundation/ops");
   const calls: string[][] = [];
   const ok: Exec = async (cmd, args) => { calls.push([cmd, ...args]); return { code: 0, stdout: "", stderr: "" }; };
   await defaultInstall("/x", ok);

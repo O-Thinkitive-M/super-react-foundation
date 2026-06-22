@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Exec } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
 import { runInit } from "../src/commands/init.ts";
 import { runScaffold } from "../src/commands/scaffold.ts";
 import { runGuard } from "../src/commands/guard.ts";

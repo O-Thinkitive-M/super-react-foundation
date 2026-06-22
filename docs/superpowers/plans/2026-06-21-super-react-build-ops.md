@@ -1,20 +1,20 @@
-# super-react Deterministic Build Ops — Implementation Plan (Plan 2 of 4)
+# super-react-foundation Deterministic Build Ops — Implementation Plan (Plan 2 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add the deterministic build operations to `super-react`: a `scaffold` engine that copies a pinned React foundation template (hashed + reproducible), `gate` runners (lint/types/test/audit), and a `fix` runner — wired into the CLI so `super-react scaffold` stands up a real foundation and flips the foundation lock.
+**Goal:** Add the deterministic build operations to `super-react-foundation`: a `scaffold` engine that copies a pinned React foundation template (hashed + reproducible), `gate` runners (lint/types/test/audit), and a `fix` runner — wired into the CLI so `super-react-foundation scaffold` stands up a real foundation and flips the foundation lock.
 
-**Architecture:** A new `@super-react/templates` package ships the pinned foundation files as data. A new `@super-react/ops` package holds pure, dependency-injected logic: `scaffoldFoundation` (copy + hash + install + state update), `runGate`/`runGates`, and `runFix`. All process execution goes through an injectable `Exec` function (`nodeExec` is the real implementation; tests inject fakes) so the suite stays hermetic. The CLI gains `scaffold`/`gate`/`fix` subcommands. This plan also clears the Plan-1 deferred items (sync stale-file cleanup, parser error context, test temp-dir teardown).
+**Architecture:** A new `@super-react-foundation/templates` package ships the pinned foundation files as data. A new `@super-react-foundation/ops` package holds pure, dependency-injected logic: `scaffoldFoundation` (copy + hash + install + state update), `runGate`/`runGates`, and `runFix`. All process execution goes through an injectable `Exec` function (`nodeExec` is the real implementation; tests inject fakes) so the suite stays hermetic. The CLI gains `scaffold`/`gate`/`fix` subcommands. This plan also clears the Plan-1 deferred items (sync stale-file cleanup, parser error context, test temp-dir teardown).
 
 **Tech Stack:** TypeScript (strict, ESM), Node ≥ 22.18, pnpm workspaces; `node:child_process`/`node:crypto`/`node:fs` built-ins. Tests via `node:test` through the `tsx` loader.
 
 ## Global Constraints
 
 - **Node ≥ 22.18**; **TypeScript strict** + `noUncheckedIndexedAccess`; **ESM only**; **erasable TS syntax only** (`erasableSyntaxOnly`).
-- **Runtime deps stay minimal & exact-pinned.** The new `@super-react/ops` and `@super-react/templates` packages add **no external runtime dependencies** — only `workspace:*` deps and Node built-ins. (The pinned React versions inside the *template's* `package.json` are template **data**, not dependencies of our packages.)
+- **Runtime deps stay minimal & exact-pinned.** The new `@super-react-foundation/ops` and `@super-react-foundation/templates` packages add **no external runtime dependencies** — only `workspace:*` deps and Node built-ins. (The pinned React versions inside the *template's* `package.json` are template **data**, not dependencies of our packages.)
 - **No postinstall scripts. No telemetry.** Code performs no network I/O **except** the explicitly-invoked `pnpm install` (during `scaffold`) and `npm audit` (the `audit` gate) — this is the design's stated exception, not a violation.
 - **All process execution is injectable** via the `Exec` type so tests never spawn real tools. The real `nodeExec` is used only by the CLI and by an optional, clearly-marked smoke step.
-- Package names: `@super-react/templates`, `@super-react/ops`. CLI package stays `super-react`.
+- Package names: `@super-react-foundation/templates`, `@super-react-foundation/ops`. CLI package stays `super-react-foundation`.
 - Use the `tsx` loader for every test run: `node --import tsx --test <file>`.
 - New tests must clean up their temp directories (register an `after` hook).
 
@@ -25,7 +25,7 @@
 ```
 packages/
   templates/
-    package.json                 # @super-react/templates  (files: src, files)
+    package.json                 # @super-react-foundation/templates  (files: src, files)
     src/index.ts                 # templateRoot(), listTemplateFiles()
     files/                       # the pinned foundation template (DATA, copied verbatim)
       package.json  tsconfig.json  tsconfig.node.json  vite.config.ts
@@ -33,7 +33,7 @@ packages/
       src/main.tsx  src/App.tsx  src/theme/index.ts  src/vite-env.d.ts
     test/templates.test.ts
   ops/
-    package.json                 # @super-react/ops  (deps: core, templates)
+    package.json                 # @super-react-foundation/ops  (deps: core, templates)
     src/
       exec.ts                    # Exec type, ExecResult, nodeExec
       scaffold.ts                # scaffoldFoundation()
@@ -64,7 +64,7 @@ packages/
 
 ---
 
-## Task 1: `@super-react/templates` — pinned foundation template
+## Task 1: `@super-react-foundation/templates` — pinned foundation template
 
 **Files:**
 - Create: `packages/templates/package.json`, `packages/templates/src/index.ts`
@@ -79,7 +79,7 @@ packages/
 `packages/templates/package.json`:
 ```json
 {
-  "name": "@super-react/templates",
+  "name": "@super-react-foundation/templates",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
@@ -231,7 +231,7 @@ dist/
 ```md
 # App
 
-Scaffolded by super-react. Run `pnpm install` then `pnpm dev`.
+Scaffolded by super-react-foundation. Run `pnpm install` then `pnpm dev`.
 ```
 
 `files/src/main.tsx`:
@@ -267,7 +267,7 @@ export function App() {
   return (
     <Container>
       <Typography variant="h4" component="h1">
-        super-react foundation ready
+        super-react-foundation foundation ready
       </Typography>
     </Container>
   );
@@ -300,7 +300,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { templateRoot, listTemplateFiles } from "@super-react/templates";
+import { templateRoot, listTemplateFiles } from "@super-react-foundation/templates";
 
 test("templateRoot points at an existing files directory", () => {
   assert.ok(existsSync(templateRoot()));
@@ -361,14 +361,14 @@ git commit -m "feat(templates): pinned React foundation template + file loader"
 
 ---
 
-## Task 2: `@super-react/ops` — exec + scaffold engine
+## Task 2: `@super-react-foundation/ops` — exec + scaffold engine
 
 **Files:**
 - Create: `packages/ops/package.json`, `packages/ops/src/exec.ts`, `packages/ops/src/scaffold.ts`, `packages/ops/src/index.ts`
 - Test: `packages/ops/test/scaffold.test.ts`
 
 **Interfaces:**
-- Consumes: `readState`/`writeState`/`stateExists` from `@super-react/core`; `templateRoot`/`listTemplateFiles` from `@super-react/templates`.
+- Consumes: `readState`/`writeState`/`stateExists` from `@super-react-foundation/core`; `templateRoot`/`listTemplateFiles` from `@super-react-foundation/templates`.
 - Produces:
   - `ExecResult { code: number; stdout: string; stderr: string }`, `Exec` (function type), `nodeExec: Exec`.
   - `ScaffoldOptions { projectRoot: string; install?: (projectRoot: string) => Promise<void>; force?: boolean }`, `ScaffoldResult { filesWritten: string[]; filesSkipped: string[]; templateHash: string }`, `scaffoldFoundation(opts: ScaffoldOptions): Promise<ScaffoldResult>`.
@@ -379,13 +379,13 @@ git commit -m "feat(templates): pinned React foundation template + file loader"
 `packages/ops/package.json`:
 ```json
 {
-  "name": "@super-react/ops",
+  "name": "@super-react-foundation/ops",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
-    "@super-react/core": "workspace:*",
-    "@super-react/templates": "workspace:*"
+    "@super-react-foundation/core": "workspace:*",
+    "@super-react-foundation/templates": "workspace:*"
   }
 }
 ```
@@ -437,8 +437,8 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { defaultState, writeState, readState } from "@super-react/core";
-import { scaffoldFoundation } from "@super-react/ops";
+import { defaultState, writeState, readState } from "@super-react-foundation/core";
+import { scaffoldFoundation } from "@super-react-foundation/ops";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -510,8 +510,8 @@ Expected: FAIL — `scaffoldFoundation` not defined.
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
-import { readState, stateExists, writeState } from "@super-react/core";
-import { listTemplateFiles, templateRoot } from "@super-react/templates";
+import { readState, stateExists, writeState } from "@super-react-foundation/core";
+import { listTemplateFiles, templateRoot } from "@super-react-foundation/templates";
 import { nodeExec } from "./exec.ts";
 
 export interface ScaffoldOptions {
@@ -537,7 +537,7 @@ export async function scaffoldFoundation(opts: ScaffoldOptions): Promise<Scaffol
   const { projectRoot, force = false } = opts;
 
   if (!stateExists(projectRoot)) {
-    throw new Error('super-react is not initialized here. Run "super-react init" first.');
+    throw new Error('super-react-foundation is not initialized here. Run "super-react-foundation init" first.');
   }
   const state = readState(projectRoot);
   if (state.foundation.complete && !force) {
@@ -614,7 +614,7 @@ git commit -m "feat(ops): scaffold engine (copy + hash + install + state) with i
 
 ---
 
-## Task 3: `@super-react/ops` — gate runners
+## Task 3: `@super-react-foundation/ops` — gate runners
 
 **Files:**
 - Create: `packages/ops/src/gates.ts`
@@ -631,8 +631,8 @@ git commit -m "feat(ops): scaffold engine (copy + hash + install + state) with i
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { Exec } from "@super-react/ops";
-import { runGate, runGates, resolveGateNames, ALL_GATES } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
+import { runGate, runGates, resolveGateNames, ALL_GATES } from "@super-react-foundation/ops";
 
 function fakeExec(code: number, stdout = "", stderr = ""): Exec {
   return async () => ({ code, stdout, stderr });
@@ -761,7 +761,7 @@ git commit -m "feat(ops): quality-gate runners (lint/types/test/audit) with inje
 
 ---
 
-## Task 4: `@super-react/ops` — fix runner
+## Task 4: `@super-react-foundation/ops` — fix runner
 
 **Files:**
 - Create: `packages/ops/src/fix.ts`
@@ -778,8 +778,8 @@ git commit -m "feat(ops): quality-gate runners (lint/types/test/audit) with inje
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { Exec } from "@super-react/ops";
-import { runFix } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
+import { runFix } from "@super-react-foundation/ops";
 
 function recordingExec(codes: number[]): { exec: Exec; calls: string[][] } {
   const calls: string[][] = [];
@@ -856,23 +856,23 @@ git commit -m "feat(ops): fix runner (eslint --fix + prettier --write)"
 
 **Files:**
 - Create: `packages/cli/src/commands/scaffold.ts`, `packages/cli/src/commands/gate.ts`, `packages/cli/src/commands/fix.ts`
-- Modify: `packages/cli/package.json` (add `@super-react/ops` dep), `packages/cli/src/cli.ts` (route + options)
+- Modify: `packages/cli/package.json` (add `@super-react-foundation/ops` dep), `packages/cli/src/cli.ts` (route + options)
 - Test: `packages/cli/test/scaffold-cli.test.ts`
 
 **Interfaces:**
-- Consumes: `scaffoldFoundation`, `runGates`, `resolveGateNames`, `runFix`, `nodeExec`, `Exec` from `@super-react/ops`; `readState` from `@super-react/core`; `renderDashboard` from `../dashboard.ts`.
+- Consumes: `scaffoldFoundation`, `runGates`, `resolveGateNames`, `runFix`, `nodeExec`, `Exec` from `@super-react-foundation/ops`; `readState` from `@super-react-foundation/core`; `renderDashboard` from `../dashboard.ts`.
 - Produces: `runScaffold({ projectRoot, noInstall, force }): Promise<number>`; `runGateCommand({ projectRoot, gateArgs, exec? }): Promise<number>` (exit 1 if any gate fails); `runFixCommand({ projectRoot, exec? }): Promise<number>`. CLI routes `scaffold`/`gate`/`fix`; adds `--no-install` and `--force` boolean options; gate names are positionals after `gate`.
 
 - [ ] **Step 1: Add the ops dependency**
 
-In `packages/cli/package.json` `dependencies`, add `"@super-react/ops": "workspace:*"`. Then run `pnpm install`.
+In `packages/cli/package.json` `dependencies`, add `"@super-react-foundation/ops": "workspace:*"`. Then run `pnpm install`.
 
 - [ ] **Step 2: Write the command runners**
 
 `packages/cli/src/commands/scaffold.ts`:
 ```ts
-import { scaffoldFoundation } from "@super-react/ops";
-import { readState } from "@super-react/core";
+import { scaffoldFoundation } from "@super-react-foundation/ops";
+import { readState } from "@super-react-foundation/core";
 import { renderDashboard } from "../dashboard.ts";
 
 export async function runScaffold(opts: {
@@ -887,7 +887,7 @@ export async function runScaffold(opts: {
     install,
   });
   console.log(
-    `super-react: foundation scaffolded (${result.filesWritten.length} written, ${result.filesSkipped.length} skipped).`,
+    `super-react-foundation: foundation scaffolded (${result.filesWritten.length} written, ${result.filesSkipped.length} skipped).`,
   );
   console.log(renderDashboard(readState(opts.projectRoot)));
   return 0;
@@ -896,7 +896,7 @@ export async function runScaffold(opts: {
 
 `packages/cli/src/commands/gate.ts`:
 ```ts
-import { type Exec, nodeExec, resolveGateNames, runGates } from "@super-react/ops";
+import { type Exec, nodeExec, resolveGateNames, runGates } from "@super-react-foundation/ops";
 
 export async function runGateCommand(opts: {
   projectRoot: string;
@@ -922,14 +922,14 @@ export async function runGateCommand(opts: {
 
 `packages/cli/src/commands/fix.ts`:
 ```ts
-import { type Exec, nodeExec, runFix } from "@super-react/ops";
+import { type Exec, nodeExec, runFix } from "@super-react-foundation/ops";
 
 export async function runFixCommand(opts: {
   projectRoot: string;
   exec?: Exec;
 }): Promise<number> {
   const result = await runFix({ cwd: opts.projectRoot, exec: opts.exec ?? nodeExec });
-  console.log(result.output || "super-react: fix complete.");
+  console.log(result.output || "super-react-foundation: fix complete.");
   return result.ok ? 0 : 1;
 }
 ```
@@ -964,7 +964,7 @@ import { runFixCommand } from "./commands/fix.ts";
       code = await runFixCommand({ projectRoot });
       break;
 ```
-4. Update the `default` branch usage string to: `"Usage: super-react <init|sync|status|guard|scaffold|gate|fix>"`.
+4. Update the `default` branch usage string to: `"Usage: super-react-foundation <init|sync|status|guard|scaffold|gate|fix>"`.
 
 - [ ] **Step 4: Write the failing integration test**
 
@@ -975,7 +975,7 @@ import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Exec } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
 import { runInit } from "../src/commands/init.ts";
 import { runScaffold } from "../src/commands/scaffold.ts";
 import { runGuard } from "../src/commands/guard.ts";
@@ -1048,8 +1048,8 @@ git commit -m "feat(cli): scaffold/gate/fix commands wired into the binary"
 - Test: `packages/cli/test/sync.test.ts`
 
 **Interfaces:**
-- Consumes: `compile` (`@super-react/compiler`), `claudeCodeAdapter` (`@super-react/adapter-claude-code`), `loadSpecs` (`@super-react/specs`); `writeEmitted` from `../write.ts`.
-- Produces: `runSync({ projectRoot }): number` that first removes super-react-owned skill directories (`.claude/skills/super-react-*`) so renamed/removed specs leave no orphans, then writes the freshly compiled pack.
+- Consumes: `compile` (`@super-react-foundation/compiler`), `claudeCodeAdapter` (`@super-react-foundation/adapter-claude-code`), `loadSpecs` (`@super-react-foundation/specs`); `writeEmitted` from `../write.ts`.
+- Produces: `runSync({ projectRoot }): number` that first removes super-react-foundation-owned skill directories (`.claude/skills/super-react-foundation-*`) so renamed/removed specs leave no orphans, then writes the freshly compiled pack.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1072,19 +1072,19 @@ after(() => {
   for (const r of roots) rmSync(r, { recursive: true, force: true });
 });
 
-test("sync removes orphaned super-react skills and writes the current pack", () => {
+test("sync removes orphaned super-react-foundation skills and writes the current pack", () => {
   const root = tempRoot();
-  const orphanDir = join(root, ".claude", "skills", "super-react-old-removed");
+  const orphanDir = join(root, ".claude", "skills", "super-react-foundation-old-removed");
   mkdirSync(orphanDir, { recursive: true });
   writeFileSync(join(orphanDir, "SKILL.md"), "stale", "utf8");
 
   assert.equal(runSync({ projectRoot: root }), 0);
 
   assert.equal(existsSync(orphanDir), false);
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
 });
 
-test("sync does not touch non-super-react skills", () => {
+test("sync does not touch non-super-react-foundation skills", () => {
   const root = tempRoot();
   const userDir = join(root, ".claude", "skills", "my-own-skill");
   mkdirSync(userDir, { recursive: true });
@@ -1108,16 +1108,16 @@ Replace the contents of `packages/cli/src/commands/sync.ts` with:
 ```ts
 import { existsSync, readdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
 import { writeEmitted } from "../write.ts";
 
 function cleanOwnedSkills(projectRoot: string): void {
   const skillsDir = join(projectRoot, ".claude", "skills");
   if (!existsSync(skillsDir)) return;
   for (const entry of readdirSync(skillsDir)) {
-    if (entry.startsWith("super-react-")) {
+    if (entry.startsWith("super-react-foundation-")) {
       rmSync(join(skillsDir, entry), { recursive: true, force: true });
     }
   }
@@ -1126,7 +1126,7 @@ function cleanOwnedSkills(projectRoot: string): void {
 export function runSync(opts: { projectRoot: string }): number {
   cleanOwnedSkills(opts.projectRoot);
   writeEmitted(opts.projectRoot, compile(loadSpecs(), claudeCodeAdapter));
-  console.log("super-react: prompt pack re-compiled.");
+  console.log("super-react-foundation: prompt pack re-compiled.");
   return 0;
 }
 ```
@@ -1141,7 +1141,7 @@ Expected: 2 tests pass; typecheck exits 0.
 - [ ] **Step 5: Commit**
 ```bash
 git add -A
-git commit -m "fix(cli): sync removes orphaned super-react skills before writing"
+git commit -m "fix(cli): sync removes orphaned super-react-foundation skills before writing"
 ```
 
 ---
@@ -1165,7 +1165,7 @@ import { test, after } from "node:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadSpecsFrom } from "@super-react/specs";
+import { loadSpecsFrom } from "@super-react-foundation/specs";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -1198,8 +1198,8 @@ Replace `packages/specs/src/index.ts` with:
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { parseSpec } from "@super-react/core";
-import type { CommandSpec } from "@super-react/core";
+import { parseSpec } from "@super-react-foundation/core";
+import type { CommandSpec } from "@super-react-foundation/core";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const SPECS_DIR = join(here, "..", "definitions");

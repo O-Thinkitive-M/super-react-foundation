@@ -1,8 +1,8 @@
-import { evaluateGuard, readState, stateExists } from "@super-react/core";
+import { evaluateGuard, readState, stateExists } from "@super-react-foundation/core";
 
 export function runGuard(opts: { projectRoot: string; requiresFoundation: boolean }): number {
   if (!stateExists(opts.projectRoot)) {
-    console.error('super-react is not initialized here. Run "super-react init" first.');
+    console.error('super-react-foundation is not initialized here. Run "super-react-foundation init" first.');
     return 1;
   }
   const result = evaluateGuard(readState(opts.projectRoot), {

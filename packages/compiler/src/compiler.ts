@@ -1,4 +1,4 @@
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
 
 export function compile(specs: CommandSpec[], adapter: AgentAdapter): EmittedFile[] {
   const files: EmittedFile[] = [];

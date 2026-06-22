@@ -4,7 +4,7 @@ export function App() {
   return (
     <Container>
       <Typography variant="h4" component="h1">
-        super-react foundation ready
+        super-react-foundation foundation ready
       </Typography>
     </Container>
   );

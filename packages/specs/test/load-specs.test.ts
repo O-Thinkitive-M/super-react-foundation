@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadSpecs, loadSpecsFrom } from "@super-react/specs";
+import { loadSpecs, loadSpecsFrom } from "@super-react-foundation/specs";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -57,7 +57,7 @@ test("all feature build/update specs require the foundation and embed the guard"
   for (const id of ids) {
     const spec = specs.find((s) => s.id === id);
     assert.equal(spec?.requiresFoundation, true, `${id} must require foundation`);
-    assert.match(spec?.body ?? "", /super-react guard --requires-foundation/, `${id} must embed the guard`);
+    assert.match(spec?.body ?? "", /super-react-foundation guard --requires-foundation/, `${id} must embed the guard`);
   }
 });
 

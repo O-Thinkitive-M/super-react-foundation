@@ -1,4 +1,4 @@
-import type { FeatureState, ProjectState } from "@super-react/core";
+import type { FeatureState, ProjectState } from "@super-react-foundation/core";
 
 function featureStatus(f: FeatureState): string {
   if (f.ui && f.api && f.tests) return "done";
@@ -23,7 +23,7 @@ export function renderDashboard(state: ProjectState): string {
   const analyzed =
     Object.keys(state.features).length > 0 || state.foundation.complete;
   const lines: string[] = [];
-  lines.push("================ super-react ================");
+  lines.push("================ super-react-foundation ================");
   lines.push("  guided React engineering");
   lines.push("--------------------------------------------");
   lines.push("PROJECT HEALTH");

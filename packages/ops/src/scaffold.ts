@@ -1,9 +1,9 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
-import { readState, stateExists, writeState } from "@super-react/core";
-import { listTemplateFiles, templateRoot } from "@super-react/templates";
-import { foundationDocsRoot, listFoundationDocs } from "@super-react/foundation-docs";
+import { readState, stateExists, writeState } from "@super-react-foundation/core";
+import { listTemplateFiles, templateRoot } from "@super-react-foundation/templates";
+import { foundationDocsRoot, listFoundationDocs } from "@super-react-foundation/foundation-docs";
 import { nodeExec, type Exec } from "./exec.ts";
 
 export interface ScaffoldOptions {
@@ -29,7 +29,7 @@ export async function scaffoldFoundation(opts: ScaffoldOptions): Promise<Scaffol
   const { projectRoot, force = false } = opts;
 
   if (!stateExists(projectRoot)) {
-    throw new Error('super-react is not initialized here. Run "super-react init" first.');
+    throw new Error('super-react-foundation is not initialized here. Run "super-react-foundation init" first.');
   }
   const state = readState(projectRoot);
   if (state.foundation.complete && !force) {

@@ -23,7 +23,7 @@ importers:
 
   packages/adapters/claude-code:
     dependencies:
-      '@super-react/core':
+      '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../../core
       yaml:
@@ -32,25 +32,25 @@ importers:
 
   packages/cli:
     devDependencies:
-      '@super-react/adapter-claude-code':
+      '@super-react-foundation/adapter-claude-code':
         specifier: workspace:*
         version: link:../adapters/claude-code
-      '@super-react/compiler':
+      '@super-react-foundation/compiler':
         specifier: workspace:*
         version: link:../compiler
-      '@super-react/core':
+      '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../core
-      '@super-react/ops':
+      '@super-react-foundation/ops':
         specifier: workspace:*
         version: link:../ops
-      '@super-react/specs':
+      '@super-react-foundation/specs':
         specifier: workspace:*
         version: link:../specs
 
   packages/compiler:
     dependencies:
-      '@super-react/core':
+      '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../core
 
@@ -64,19 +64,19 @@ importers:
 
   packages/ops:
     dependencies:
-      '@super-react/core':
+      '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../core
-      '@super-react/foundation-docs':
+      '@super-react-foundation/foundation-docs':
         specifier: workspace:*
         version: link:../foundation-docs
-      '@super-react/templates':
+      '@super-react-foundation/templates':
         specifier: workspace:*
         version: link:../templates
 
   packages/specs:
     dependencies:
-      '@super-react/core':
+      '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../core
 

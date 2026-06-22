@@ -1,5 +1,5 @@
-import { scaffoldFoundation } from "@super-react/ops";
-import { readState } from "@super-react/core";
+import { scaffoldFoundation } from "@super-react-foundation/ops";
+import { readState } from "@super-react-foundation/core";
 import { renderDashboard } from "../dashboard.ts";
 
 export async function runScaffold(opts: {
@@ -14,7 +14,7 @@ export async function runScaffold(opts: {
     install,
   });
   console.log(
-    `super-react: foundation scaffolded (${result.filesWritten.length} written, ${result.filesSkipped.length} skipped).`,
+    `super-react-foundation: foundation scaffolded (${result.filesWritten.length} written, ${result.filesSkipped.length} skipped).`,
   );
   console.log(renderDashboard(readState(opts.projectRoot)));
   return 0;

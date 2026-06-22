@@ -1,5 +1,5 @@
 {
-  "name": "@super-react/templates",
+  "name": "@super-react-foundation/templates",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },

@@ -11,7 +11,7 @@ Integrate an external system (e.g. Keycloak, Stripe, Firebase) into the project.
 Integrations should be added consistently — packages, configuration, services, and documentation together — not ad hoc.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Ask the integration questions specific to the service.
 3. Install the required packages, configure environment variables (never commit secrets), and generate the service layer.
 4. Update `project-setup/` architecture docs and generate a short implementation guide.

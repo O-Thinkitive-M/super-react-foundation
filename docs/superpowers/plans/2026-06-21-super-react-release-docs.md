@@ -1,17 +1,17 @@
-# super-react Release & Docs — Implementation Plan (Plan 4 of 4)
+# super-react-foundation Release & Docs — Implementation Plan (Plan 4 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make `super-react` installable and runnable by end users without the monorepo or `tsx` — a self-contained, auditable, documented package — and close the remaining Plan-2/3 deferrals.
+**Goal:** Make `super-react-foundation` installable and runnable by end users without the monorepo or `tsx` — a self-contained, auditable, documented package — and close the remaining Plan-2/3 deferrals.
 
-**Architecture:** Bundle the CLI + its `@super-react/*` workspace deps into one self-contained `super-react` package via esbuild; ship the three data directories (`files/`, `definitions/`, `docs/`) alongside the bundle so the existing `import.meta.url`-relative loaders resolve unchanged (each uses a distinct dir name, so they don't collide). Verify with `npm pack` + a tarball install (no registry needed). Add single-sourced docs, supply-chain CI, and an example.
+**Architecture:** Bundle the CLI + its `@super-react-foundation/*` workspace deps into one self-contained `super-react-foundation` package via esbuild; ship the three data directories (`files/`, `definitions/`, `docs/`) alongside the bundle so the existing `import.meta.url`-relative loaders resolve unchanged (each uses a distinct dir name, so they don't collide). Verify with `npm pack` + a tarball install (no registry needed). Add single-sourced docs, supply-chain CI, and an example.
 
 **Tech Stack:** esbuild (dev-only bundler), Node ≥ 22.18, pnpm; GitHub Actions YAML; `node:test` via `tsx`.
 
 ## Global Constraints
 
 - ESM only; TypeScript strict + `noUncheckedIndexedAccess`; erasable TS in framework `src/`.
-- **The published `super-react` package must be self-contained:** zero runtime dependencies (everything, including `yaml`, is bundled), no `postinstall` scripts, no telemetry, no network at runtime except the sanctioned `pnpm install`/`npm audit` the user's commands invoke.
+- **The published `super-react-foundation` package must be self-contained:** zero runtime dependencies (everything, including `yaml`, is bundled), no `postinstall` scripts, no telemetry, no network at runtime except the sanctioned `pnpm install`/`npm audit` the user's commands invoke.
 - Dev/test still runs from source via `tsx` (`node --import tsx --test <file>`); the build is additive and must not break the source workflow.
 - Data dirs keep their distinct names so the loaders' `join(here, "..", "<dir>")` resolves both from `src/` (dev) and from `dist/` (bundled): templates→`files`, specs→`definitions`, foundation-docs→`docs`.
 - Commit hygiene: `git status` before each commit; never stage deletions under `docs/superpowers/`.
@@ -40,7 +40,7 @@ RELEASE.md                       # release checklist
 ## Task 1: Close Plan-2/3 deferrals (foundation-docs wiring, guard de-dup, defaultInstall test)
 
 **Files:**
-- Modify: `packages/ops/src/scaffold.ts` (copy foundation-docs outlines into `project-setup/`), `packages/ops/package.json` (add `@super-react/foundation-docs` dep)
+- Modify: `packages/ops/src/scaffold.ts` (copy foundation-docs outlines into `project-setup/`), `packages/ops/package.json` (add `@super-react-foundation/foundation-docs` dep)
 - Modify: `packages/adapters/claude-code/src/index.ts` (remove the duplicated guard auto-header), `packages/adapters/claude-code/test/adapter.test.ts` + golden
 - Modify: `packages/ops/src/scaffold.ts` `defaultInstall` to take an injectable runner; `packages/ops/test/scaffold.test.ts`
 - Test: `packages/ops/test/scaffold.test.ts`
@@ -65,11 +65,11 @@ test("scaffold seeds project-setup/ from the foundation-docs outlines", async ()
 
 - [ ] **Step 2: Implement the wiring**
 
-In `packages/ops/package.json` add `"@super-react/foundation-docs": "workspace:*"` to `dependencies`, then `pnpm install`.
+In `packages/ops/package.json` add `"@super-react-foundation/foundation-docs": "workspace:*"` to `dependencies`, then `pnpm install`.
 
 In `packages/ops/src/scaffold.ts`, add imports:
 ```ts
-import { foundationDocsRoot, listFoundationDocs } from "@super-react/foundation-docs";
+import { foundationDocsRoot, listFoundationDocs } from "@super-react-foundation/foundation-docs";
 ```
 After the template copy loop and before/with the FOUNDATION_COMPLETE write, seed `project-setup/`:
 ```ts
@@ -96,12 +96,12 @@ Expected: all pass (including the new project-setup seeding test).
 In `packages/adapters/claude-code/src/index.ts`, REMOVE the `guard` auto-header logic from `renderSkill` (the `requiresFoundation ? "> **Before doing anything..." : ""` block) and the `guard` variable, so the body is rendered as-authored (the spec's own Step 1 carries the guard). The frontmatter + body + `next` composition stays.
 
 In `packages/adapters/claude-code/test/adapter.test.ts`:
-- The "foundation-required commands embed the guard instruction" test currently passes a fixture whose body has no guard line. Change that test to assert the rendered output contains the spec **body** verbatim and does NOT add an extra guard header — i.e. give the fixture a body that itself contains `Run \`super-react guard --requires-foundation\``, and assert the rendered skill contains exactly one occurrence:
+- The "foundation-required commands embed the guard instruction" test currently passes a fixture whose body has no guard line. Change that test to assert the rendered output contains the spec **body** verbatim and does NOT add an extra guard header — i.e. give the fixture a body that itself contains `Run \`super-react-foundation guard --requires-foundation\``, and assert the rendered skill contains exactly one occurrence:
 ```ts
 test("the adapter renders the body as-authored without injecting an extra guard header", () => {
-  const spec = { ...statusSpec, requiresFoundation: true, body: "## Steps\n1. Run `super-react guard --requires-foundation`." };
+  const spec = { ...statusSpec, requiresFoundation: true, body: "## Steps\n1. Run `super-react-foundation guard --requires-foundation`." };
   const out = claudeCodeAdapter.emitCommand(spec)[0]!.contents;
-  const count = out.split("super-react guard --requires-foundation").length - 1;
+  const count = out.split("super-react-foundation guard --requires-foundation").length - 1;
   assert.equal(count, 1);
 });
 ```
@@ -131,7 +131,7 @@ export async function defaultInstall(projectRoot: string, exec: Exec = nodeExec)
 Append to `packages/ops/test/scaffold.test.ts`:
 ```ts
 test("defaultInstall runs pnpm install and throws on non-zero exit", async () => {
-  const { defaultInstall } = await import("@super-react/ops");
+  const { defaultInstall } = await import("@super-react-foundation/ops");
   const calls: string[][] = [];
   const ok: Exec = async (cmd, args) => { calls.push([cmd, ...args]); return { code: 0, stdout: "", stderr: "" }; };
   await defaultInstall("/x", ok);
@@ -140,7 +140,7 @@ test("defaultInstall runs pnpm install and throws on non-zero exit", async () =>
   await assert.rejects(() => defaultInstall("/x", bad), /install failed/);
 });
 ```
-Add `import type { Exec } from "@super-react/ops";` to the test imports if not present, and export `defaultInstall` from `packages/ops/src/index.ts` (it's exported via `export * from "./scaffold.ts"` already — confirm).
+Add `import type { Exec } from "@super-react-foundation/ops";` to the test imports if not present, and export `defaultInstall` from `packages/ops/src/index.ts` (it's exported via `export * from "./scaffold.ts"` already — confirm).
 
 - [ ] **Step 6: Full sweep + commit**
 ```bash
@@ -162,11 +162,11 @@ git commit -m "feat(ops,adapter): seed project-setup from foundation-docs; singl
 - Modify: `packages/cli/package.json` (bin, files, scripts, devDeps), root `package.json` (add `esbuild` devDep + `build` script)
 - Test: manual via `npm pack` + tarball install (documented below)
 
-**Interfaces:** `pnpm --filter super-react build` (or root `pnpm build`) produces `packages/cli/dist/cli.js` (bundled, shebang, executable) and copies the three data dirs into `packages/cli/`.
+**Interfaces:** `pnpm --filter super-react-foundation build` (or root `pnpm build`) produces `packages/cli/dist/cli.js` (bundled, shebang, executable) and copies the three data dirs into `packages/cli/`.
 
 - [ ] **Step 1: Add esbuild and the build script**
 
-Root `package.json` devDependencies: add `"esbuild": "0.24.2"` (verify latest stable at implementation time; pin exact). Add root script `"build": "pnpm --filter super-react build"`.
+Root `package.json` devDependencies: add `"esbuild": "0.24.2"` (verify latest stable at implementation time; pin exact). Add root script `"build": "pnpm --filter super-react-foundation build"`.
 
 `packages/cli/build.mjs`:
 ```js
@@ -199,16 +199,16 @@ cpSync(join(repo, "packages", "templates", "files"), join(root, "files"), { recu
 cpSync(join(repo, "packages", "specs", "definitions"), join(root, "definitions"), { recursive: true });
 cpSync(join(repo, "packages", "foundation-docs", "docs"), join(root, "docs"), { recursive: true });
 
-console.log("super-react: build complete (dist/cli.js + data dirs).");
+console.log("super-react-foundation: build complete (dist/cli.js + data dirs).");
 ```
 
 - [ ] **Step 2: Update the CLI package manifest**
 
 `packages/cli/package.json`:
-- `"bin": { "super-react": "dist/cli.js" }`
+- `"bin": { "super-react-foundation": "dist/cli.js" }`
 - `"files": ["dist", "files", "definitions", "docs"]`
 - add `"scripts": { "build": "node build.mjs" }`
-- Move the four `@super-react/*` deps and `yaml` reality: keep the workspace deps under `dependencies` for the build to resolve them, BUT since they are bundled, the published package should not require them at runtime. Use `"publishConfig"` is overkill; instead rely on `files` excluding nothing problematic and the bundle being self-contained. (Document in RELEASE.md that the workspace deps are build-time only and bundled.) Leave `dependencies` as-is for dev; the bundle inlines them.
+- Move the four `@super-react-foundation/*` deps and `yaml` reality: keep the workspace deps under `dependencies` for the build to resolve them, BUT since they are bundled, the published package should not require them at runtime. Use `"publishConfig"` is overkill; instead rely on `files` excluding nothing problematic and the bundle being self-contained. (Document in RELEASE.md that the workspace deps are build-time only and bundled.) Leave `dependencies` as-is for dev; the bundle inlines them.
 
 - [ ] **Step 3: Build and verify the bundle runs without tsx**
 ```bash
@@ -216,7 +216,7 @@ pnpm build
 rm -rf /tmp/sr-built && mkdir -p /tmp/sr-built
 node packages/cli/dist/cli.js init --cwd /tmp/sr-built
 node packages/cli/dist/cli.js scaffold --no-install --cwd /tmp/sr-built
-ls /tmp/sr-built/.claude/skills | grep -c '^super-react-'   # expect 15
+ls /tmp/sr-built/.claude/skills | grep -c '^super-react-foundation-'   # expect 15
 ls /tmp/sr-built/project-setup | grep -c '\.md$'            # expect 11
 ```
 Expected: dashboard prints, 15 skills, 11 project-setup docs — all via plain `node`, no tsx, no workspace.
@@ -225,11 +225,11 @@ Expected: dashboard prints, 15 skills, 11 project-setup docs — all via plain `
 ```bash
 cd packages/cli && npm pack && cd -
 mkdir -p /tmp/sr-pack && cd /tmp/sr-pack && npm init -y >/dev/null
-npm install /home/ttpl-lnvl15-0287/Desktop/super-ui/packages/cli/super-react-*.tgz
-npx super-react init && ls .claude/skills | grep -c '^super-react-'   # expect 15
-cd - && rm -f packages/cli/super-react-*.tgz
+npm install /home/ttpl-lnvl15-0287/Desktop/super-ui/packages/cli/super-react-foundation-*.tgz
+npx super-react-foundation init && ls .claude/skills | grep -c '^super-react-foundation-'   # expect 15
+cd - && rm -f packages/cli/super-react-foundation-*.tgz
 ```
-Expected: installing ONLY the tarball (no monorepo) and running `npx super-react init` works and installs 15 skills — proving the package is self-contained. If a data dir or workspace import is missing, fix the build script / `files` and repeat.
+Expected: installing ONLY the tarball (no monorepo) and running `npx super-react-foundation init` works and installs 15 skills — proving the package is self-contained. If a data dir or workspace import is missing, fix the build script / `files` and repeat.
 
 - [ ] **Step 5: Add `dist/` to gitignore (already ignored) and commit the build tooling**
 ```bash
@@ -252,7 +252,7 @@ git commit -m "build(cli): self-contained esbuild bundle + data dirs; verified v
 import { writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { loadSpecs } from "@super-react/specs";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 const repo = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(repo, "docs", "commands");
@@ -263,13 +263,13 @@ for (const spec of loadSpecs()) {
   const front = `# /${spec.id}\n\n- **Phase:** ${spec.phase}\n- **Requires foundation:** ${spec.requiresFoundation}\n- **Next:** ${spec.nextSuggested ? "/" + spec.nextSuggested : "—"}\n\n`;
   writeFileSync(join(outDir, `${spec.id}.md`), front + spec.body + "\n", "utf8");
 }
-console.log(`super-react: wrote ${loadSpecs().length} command docs.`);
+console.log(`super-react-foundation: wrote ${loadSpecs().length} command docs.`);
 ```
 Run it via `node --import tsx scripts/gen-docs.mjs` and add a root script `"gen-docs": "node --import tsx scripts/gen-docs.mjs"`.
 
 - [ ] **Step 2: Write the README**
 
-`README.md` (repo root) — beginner-friendly, covering: what super-react is; install (`npx super-react init`); the strict workflow (analyze → setup-foundation → build/update → integrate → review/test); the 30-second dashboard (show the rendered example); a command table (all 15, one line each, linking to `docs/commands/<id>.md`); the security stance (self-contained, no telemetry, pinned/audited); and "works with any agent (Claude Code today, adapters next)". Keep it practical, no jargon.
+`README.md` (repo root) — beginner-friendly, covering: what super-react-foundation is; install (`npx super-react-foundation init`); the strict workflow (analyze → setup-foundation → build/update → integrate → review/test); the 30-second dashboard (show the rendered example); a command table (all 15, one line each, linking to `docs/commands/<id>.md`); the security stance (self-contained, no telemetry, pinned/audited); and "works with any agent (Claude Code today, adapters next)". Keep it practical, no jargon.
 
 - [ ] **Step 3: Generate docs + add a presence test**
 
@@ -280,7 +280,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { loadSpecs } from "@super-react/specs";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 const repo = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
@@ -324,7 +324,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
-      - run: pnpm --filter super-react build
+      - run: pnpm --filter super-react-foundation build
       - run: pnpm audit --audit-level=high
       - run: npx --yes license-checker-rseidelsohn --production --failOn "GPL;AGPL" || true
 ```
@@ -346,7 +346,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "22.18", registry-url: "https://registry.npmjs.org", cache: "pnpm" }
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test && pnpm --filter super-react build
+      - run: pnpm test && pnpm --filter super-react-foundation build
       - run: npm publish --provenance --access public
         working-directory: packages/cli
         env: { NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}" }
@@ -367,16 +367,16 @@ git commit -m "ci: supply-chain checks + provenance-signed release workflow"
 
 - [ ] **Step 1: Example doc**
 
-`examples/README.md`: explain that `npx super-react init && super-react scaffold` produces the foundation, and show the resulting top-level tree (`.claude/`, `.super-react/`, `project-setup/`, `src/lib/ds`, `src/lib/algo`, the scaffolded app). Do not commit `node_modules` or a full generated app — describe how to reproduce it.
+`examples/README.md`: explain that `npx super-react-foundation init && super-react-foundation scaffold` produces the foundation, and show the resulting top-level tree (`.claude/`, `.super-react-foundation/`, `project-setup/`, `src/lib/ds`, `src/lib/algo`, the scaffolded app). Do not commit `node_modules` or a full generated app — describe how to reproduce it.
 
 - [ ] **Step 2: RELEASE.md checklist**
 
-`RELEASE.md`: the release steps — verify npm name availability for `super-react`; `pnpm install && pnpm typecheck && pnpm test`; `pnpm --filter super-react build`; `npm pack` + tarball smoke; bump version; tag `vX.Y.Z`; the release workflow publishes with provenance. Note the workspace deps are build-time-only (bundled).
+`RELEASE.md`: the release steps — verify npm name availability for `super-react-foundation`; `pnpm install && pnpm typecheck && pnpm test`; `pnpm --filter super-react-foundation build`; `npm pack` + tarball smoke; bump version; tag `vX.Y.Z`; the release workflow publishes with provenance. Note the workspace deps are build-time-only (bundled).
 
 - [ ] **Step 3: Final whole-suite + built + packed verification**
 ```bash
 pnpm test && pnpm typecheck
-pnpm --filter super-react build
+pnpm --filter super-react-foundation build
 node packages/cli/dist/cli.js init --cwd /tmp/sr-final-v1 2>/dev/null; echo "built CLI ok"
 ```
 Expected: suite green; built CLI runs.
@@ -395,6 +395,6 @@ git commit -m "docs: example walkthrough + release checklist"
 
 **2. Placeholder scan:** Pin `esbuild` and any tool versions to exact at implementation time (the only deferred value, resolved via the registry). All scripts/workflows are complete.
 
-**3. Consistency:** Data-dir resolution holds because `files`/`definitions`/`docs` are distinct names resolved as `join(here,"..",<dir>)` from both `src/` and `dist/`. The bundle inlines all workspace deps + `yaml`, so the published package is self-contained. `defaultInstall` exported from `@super-react/ops` and used by `scaffoldFoundation`. Generated docs derive from the same `loadSpecs()` single source as the prompt pack.
+**3. Consistency:** Data-dir resolution holds because `files`/`definitions`/`docs` are distinct names resolved as `join(here,"..",<dir>)` from both `src/` and `dist/`. The bundle inlines all workspace deps + `yaml`, so the published package is self-contained. `defaultInstall` exported from `@super-react-foundation/ops` and used by `scaffoldFoundation`. Generated docs derive from the same `loadSpecs()` single source as the prompt pack.
 
 > **Note:** `npm publish` itself requires registry auth and is intentionally NOT executed here — it runs in `release.yml` on tag. Plan 4 verifies release-readiness via `npm pack` + local tarball install, which needs no registry.

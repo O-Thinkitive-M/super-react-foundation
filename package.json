@@ -1,11 +1,11 @@
 {
-  "name": "super-react-monorepo",
+  "name": "super-react-foundation-monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.4.0",
   "engines": { "node": ">=22.18" },
   "scripts": {
-    "build": "pnpm --filter super-react build",
+    "build": "pnpm --filter super-react-foundation build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --import tsx --test \"packages/**/test/**/*.test.ts\"",
     "sr": "node --import tsx packages/cli/src/cli.ts",

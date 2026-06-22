@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { Exec } from "@super-react/ops";
-import { runGate, runGates, resolveGateNames, ALL_GATES } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
+import { runGate, runGates, resolveGateNames, ALL_GATES } from "@super-react-foundation/ops";
 
 function fakeExec(code: number, stdout = "", stderr = ""): Exec {
   return async () => ({ code, stdout, stderr });

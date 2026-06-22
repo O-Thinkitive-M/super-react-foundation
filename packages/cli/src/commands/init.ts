@@ -1,7 +1,7 @@
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
-import { defaultState, readState, stateExists, writeState } from "@super-react/core";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
+import { defaultState, readState, stateExists, writeState } from "@super-react-foundation/core";
 import { writeEmitted } from "../write.ts";
 import { renderDashboard } from "../dashboard.ts";
 

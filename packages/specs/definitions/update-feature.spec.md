@@ -15,10 +15,10 @@ Update an existing feature end to end — UI, API, tests, and documentation — 
 Features change. This keeps the implementation and the feature plan from drifting apart.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md` and the current implementation.
 3. Apply the change across UI, API, and tests. Update the feature plan to match.
-4. Run `super-react gate all` and resolve failures.
+4. Run `super-react-foundation gate all` and resolve failures.
 
 ## Example
 `/update-feature patient-dashboard`

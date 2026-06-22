@@ -1,5 +1,5 @@
 {
-  "name": "@super-react/foundation-docs",
+  "name": "@super-react-foundation/foundation-docs",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },

@@ -1,13 +1,18 @@
-# Release Checklist — super-react
+# Release Checklist — super-react-foundation
 
 Follow these steps in order before and during every release.
+
+> **Naming:** the npm package, the CLI command, and the skill namespace are all
+> **`super-react-foundation`**. The bare name `super-react` is owned by an
+> unrelated package on npm, which is why this project publishes under
+> `super-react-foundation`.
 
 ---
 
 ## 1. Verify npm name availability (first release only)
 
 ```bash
-npm view super-react version 2>&1 || echo "name is available"
+npm view super-react-foundation version 2>&1 || echo "name is available"
 ```
 
 If the name is already taken, resolve the conflict before continuing.
@@ -29,10 +34,10 @@ All three commands must exit cleanly before proceeding.
 ## 3. Build
 
 ```bash
-pnpm --filter super-react build
+pnpm --filter super-react-foundation build
 ```
 
-Expected output: `super-react: build complete (dist/cli.js + data dirs).`
+Expected output: `super-react-foundation: build complete (dist/cli.js + data dirs).`
 
 Verify the dist artefacts:
 
@@ -50,26 +55,26 @@ ls packages/cli/docs/    # generated command docs
 ```bash
 cd packages/cli
 npm pack --dry-run   # inspect included files — no node_modules, no src
-npm pack            # creates super-react-X.Y.Z.tgz
+npm pack            # creates super-react-foundation-X.Y.Z.tgz
 
 # Smoke-test in an isolated directory
 mkdir /tmp/sr-smoke && cd /tmp/sr-smoke
-npm install /path/to/packages/cli/super-react-X.Y.Z.tgz
-npx super-react init  --cwd /tmp/sr-smoke
-npx super-react scaffold --no-install --cwd /tmp/sr-smoke
-ls /tmp/sr-smoke/.claude/skills | grep -c '^super-react-'
+npm install /path/to/packages/cli/super-react-foundation-X.Y.Z.tgz
+npx super-react-foundation init  --cwd /tmp/sr-smoke
+npx super-react-foundation scaffold --no-install --cwd /tmp/sr-smoke
+ls /tmp/sr-smoke/.claude/skills | grep -c '^super-react-foundation-'
 # Expected: 15
 ```
 
 Clean up:
 
 ```bash
-rm /path/to/packages/cli/super-react-X.Y.Z.tgz
+rm /path/to/packages/cli/super-react-foundation-X.Y.Z.tgz
 ```
 
 > **Workspace deps are build-time-only (bundled).**
-> `@super-react/core`, `@super-react/compiler`, `@super-react/adapter-claude-code`,
-> `@super-react/specs`, and `@super-react/ops` are `devDependencies` in the CLI package.
+> `@super-react-foundation/core`, `@super-react-foundation/compiler`, `@super-react-foundation/adapter-claude-code`,
+> `@super-react-foundation/specs`, and `@super-react-foundation/ops` are `devDependencies` in the CLI package.
 > The esbuild bundle inlines them all, so the published tarball has zero runtime dependencies.
 
 ---
@@ -118,7 +123,7 @@ The `release.yml` workflow runs the same gates as CI before publishing:
 3. Runs the full quality + build gate in order:
    - `pnpm typecheck` — tsc must exit 0
    - `pnpm test` — full suite must pass
-   - `pnpm --filter super-react build` — bundle must build cleanly
+   - `pnpm --filter super-react-foundation build` — bundle must build cleanly
    - `pnpm audit --audit-level=high` — no high/critical vulnerabilities
 4. Publishes to npm with **provenance** (`--provenance`) so the package is
    verifiably linked to this repository and commit.
@@ -129,7 +134,7 @@ No manual `npm publish` is needed — pushing the tag is sufficient.
 
 ## Post-release
 
-- Confirm the package appears on [npmjs.com/package/super-react](https://www.npmjs.com/package/super-react).
+- Confirm the package appears on [npmjs.com/package/super-react-foundation](https://www.npmjs.com/package/super-react-foundation).
 - Verify the provenance attestation is visible on the npm page.
-- Test the published package end-to-end: `npx super-react@X.Y.Z init`.
+- Test the published package end-to-end: `npx super-react-foundation@X.Y.Z init`.
 - Create a GitHub Release from the tag and copy the relevant CHANGELOG entries.

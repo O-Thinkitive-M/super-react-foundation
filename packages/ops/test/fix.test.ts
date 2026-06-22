@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { Exec } from "@super-react/ops";
-import { runFix } from "@super-react/ops";
+import type { Exec } from "@super-react-foundation/ops";
+import { runFix } from "@super-react-foundation/ops";
 
 function recordingExec(codes: number[]): { exec: Exec; calls: string[][] } {
   const calls: string[][] = [];

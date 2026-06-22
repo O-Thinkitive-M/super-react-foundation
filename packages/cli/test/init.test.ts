@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { runInit } from "../src/commands/init.ts";
 import { runGuard } from "../src/commands/guard.ts";
 import { runSync } from "../src/commands/sync.ts";
-import { readState, writeState } from "@super-react/core";
+import { readState, writeState } from "@super-react-foundation/core";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -22,14 +22,14 @@ test("init installs the prompt pack and writes state", () => {
   const root = tempRoot();
   const code = runInit({ projectRoot: root, agent: "claude-code" });
   assert.equal(code, 0);
-  assert.ok(existsSync(join(root, ".super-react", "state.json")));
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
-  assert.ok(existsSync(join(root, ".claude", "super-react.manifest.json")));
+  assert.ok(existsSync(join(root, ".super-react-foundation", "state.json")));
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "super-react-foundation.manifest.json")));
   const skill = readFileSync(
-    join(root, ".claude", "skills", "super-react-build-feature", "SKILL.md"),
+    join(root, ".claude", "skills", "super-react-foundation-build-feature", "SKILL.md"),
     "utf8",
   );
-  assert.match(skill, /super-react guard --requires-foundation/);
+  assert.match(skill, /super-react-foundation guard --requires-foundation/);
 });
 
 test("guard blocks feature work right after init (foundation incomplete)", () => {
@@ -59,13 +59,13 @@ test("guard fails cleanly in an uninitialized directory", () => {
 test("sync writes the prompt pack", () => {
   const root = tempRoot();
   assert.equal(runSync({ projectRoot: root }), 0);
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
 });
 
 test("init installs a skill for every command in the catalog", () => {
   const root = tempRoot();
   runInit({ projectRoot: root, agent: "claude-code" });
   const skillsDir = join(root, ".claude", "skills");
-  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-"));
+  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-foundation-"));
   assert.equal(installed.length, 15);
 });

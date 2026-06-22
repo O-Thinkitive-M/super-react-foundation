@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseSpec } from "@super-react/core";
+import { parseSpec } from "@super-react-foundation/core";
 
 const VALID = `---
 id: project-status

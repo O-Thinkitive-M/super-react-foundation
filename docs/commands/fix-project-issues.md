@@ -11,10 +11,10 @@ Automatically fix common issues: lint, formatting, imports, TypeScript errors, a
 Mechanical issues should be fixed in one pass, not one at a time by hand.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
-2. Run `super-react fix` to apply lint and formatting fixes.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
+2. Run `super-react-foundation fix` to apply lint and formatting fixes.
 3. Resolve remaining TypeScript errors and architecture violations by hand.
-4. Run `super-react gate all` and report what was fixed and what remains.
+4. Run `super-react-foundation gate all` and report what was fixed and what remains.
 
 ## Example
 `/fix-project-issues`
@@ -26,4 +26,4 @@ Re-run the gates after fixing to confirm. Report anything that needs human judgm
 Claiming a clean project without re-running the gates.
 
 ## Troubleshooting
-If `super-react fix` cannot resolve an error, fix it manually and re-run the gates.
+If `super-react-foundation fix` cannot resolve an error, fix it manually and re-run the gates.

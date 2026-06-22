@@ -1,7 +1,7 @@
 {
-  "name": "@super-react/adapter-claude-code",
+  "name": "@super-react-foundation/adapter-claude-code",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
-  "dependencies": { "@super-react/core": "workspace:*", "yaml": "2.6.1" }
+  "dependencies": { "@super-react-foundation/core": "workspace:*", "yaml": "2.6.1" }
 }

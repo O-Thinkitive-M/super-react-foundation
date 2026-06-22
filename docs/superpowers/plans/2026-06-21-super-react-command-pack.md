@@ -1,10 +1,10 @@
-# super-react Command Pack Content — Implementation Plan (Plan 3 of 4)
+# super-react-foundation Command Pack Content — Implementation Plan (Plan 3 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Author the remaining 13 canonical command specs and the foundation-docs generators so the full 15-command guided workflow is operational and compiles into the Claude Code prompt pack.
 
-**Architecture:** Each command is a markdown file (`*.spec.md`) with YAML frontmatter + a beginner-friendly body, dropped into `packages/specs/definitions/`. They are parsed by `parseSpec` (built in Plan 1), loaded by `loadSpecs`, and compiled by the Claude Code adapter — no engine changes needed. The `setup-project-foundation` spec drives the hybrid scaffold: it runs the deterministic `super-react scaffold` (Plan 2) then generates the per-project `project-setup/*.md` docs from skeleton outlines shipped in a new `@super-react/foundation-docs` package, then runs `super-react gate all`.
+**Architecture:** Each command is a markdown file (`*.spec.md`) with YAML frontmatter + a beginner-friendly body, dropped into `packages/specs/definitions/`. They are parsed by `parseSpec` (built in Plan 1), loaded by `loadSpecs`, and compiled by the Claude Code adapter — no engine changes needed. The `setup-project-foundation` spec drives the hybrid scaffold: it runs the deterministic `super-react-foundation scaffold` (Plan 2) then generates the per-project `project-setup/*.md` docs from skeleton outlines shipped in a new `@super-react-foundation/foundation-docs` package, then runs `super-react-foundation gate all`.
 
 **Tech Stack:** Markdown + YAML frontmatter (content); TypeScript/ESM for the foundation-docs loader; `node:test` via `tsx` for validation/golden tests.
 
@@ -13,8 +13,8 @@
 - Every spec file lives in `packages/specs/definitions/<id>.spec.md` and MUST parse via `parseSpec` (frontmatter then body).
 - **Frontmatter fields (all required):** `id`, `title`, `phase` (`analyze|foundation|feature|integrate|quality|status`), `requiresFoundation` (bool), `inputs` (list), `produces` (list), `cliOps` (list), `nextSuggested` (string or `null`).
 - **Every spec body follows this beginner-friendly template, in this order:** `## Purpose`, `## Why it exists`, `## Steps`, `## Example`, `## Best Practices`, `## Common Mistakes`, `## Troubleshooting`. (The compiled "Recommended next step" line is added automatically by the adapter from `nextSuggested` — do NOT hand-write it.)
-- **Foundation-lock rule:** any spec with `requiresFoundation: true` MUST begin its `## Steps` with: "Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message."
-- Specs reference deterministic work ONLY via `super-react <op>` shell calls (`guard`, `scaffold`, `gate`, `fix`) — never assume a specific agent's tooling.
+- **Foundation-lock rule:** any spec with `requiresFoundation: true` MUST begin its `## Steps` with: "Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message."
+- Specs reference deterministic work ONLY via `super-react-foundation <op>` shell calls (`guard`, `scaffold`, `gate`, `fix`) — never assume a specific agent's tooling.
 - No engine/CLI code changes in Tasks 1–4 (content only). The foundation-docs package adds no external runtime deps.
 - ESM only; erasable TS; strict + `noUncheckedIndexedAccess`. Tests via `node --import tsx --test <file>`.
 - **Commit hygiene:** before each commit run `git status` and confirm only the intended files are staged; never stage deletions under `docs/` or other packages.
@@ -150,7 +150,7 @@ git add -A && git commit -m "feat(specs): analyze-project + create-feature-plan 
 
 ---
 
-## Task 2: `setup-project-foundation` spec + `@super-react/foundation-docs`
+## Task 2: `setup-project-foundation` spec + `@super-react-foundation/foundation-docs`
 
 **Files:**
 - Create: `packages/foundation-docs/package.json`, `packages/foundation-docs/src/index.ts`, and ten outline files under `packages/foundation-docs/docs/`
@@ -158,14 +158,14 @@ git add -A && git commit -m "feat(specs): analyze-project + create-feature-plan 
 - Test: `packages/foundation-docs/test/foundation-docs.test.ts`, and append to `packages/specs/test/load-specs.test.ts`
 
 **Interfaces:**
-- Produces: `@super-react/foundation-docs` exporting `foundationDocsRoot(): string` and `listFoundationDocs(): string[]` (the outline filenames, sorted); the `setup-project-foundation` spec.
+- Produces: `@super-react-foundation/foundation-docs` exporting `foundationDocsRoot(): string` and `listFoundationDocs(): string[]` (the outline filenames, sorted); the `setup-project-foundation` spec.
 
 - [ ] **Step 1: Create the foundation-docs package skeleton**
 
 `packages/foundation-docs/package.json`:
 ```json
 {
-  "name": "@super-react/foundation-docs",
+  "name": "@super-react-foundation/foundation-docs",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
@@ -237,9 +237,9 @@ Create the complete, production-ready React foundation. This is mandatory — fe
 A consistent, opinionated foundation is what makes every later feature fast and safe to build. Doing it once, deterministically, prevents drift.
 
 ## Steps
-1. Run `super-react scaffold`. This copies the pinned React foundation, installs dependencies, writes `FOUNDATION_COMPLETE.md`, and unlocks feature development.
+1. Run `super-react-foundation scaffold`. This copies the pinned React foundation, installs dependencies, writes `FOUNDATION_COMPLETE.md`, and unlocks feature development.
 2. For each foundation outline, generate the matching `project-setup/<name>.md`, adapting it to the requirements captured by analyze-project (architecture, folder-structure, routing, authentication, state-management, api-strategy, error-handling, testing-strategy, coding-standards, deployment).
-3. Run `super-react gate all` and resolve anything that fails.
+3. Run `super-react-foundation gate all` and resolve anything that fails.
 4. Report "Project Foundation Complete" and that feature development is unlocked.
 
 ## Example
@@ -252,7 +252,7 @@ Let `scaffold` own the deterministic base; only hand-write the project-specific 
 Re-implementing boilerplate by hand instead of using `scaffold`. Skipping the gate run.
 
 ## Troubleshooting
-"already set up" → the foundation exists; use `super-react scaffold --force` only if you intend to re-scaffold.
+"already set up" → the foundation exists; use `super-react-foundation scaffold --force` only if you intend to re-scaffold.
 ```
 
 - [ ] **Step 4: Tests (RED→GREEN)**
@@ -263,7 +263,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, join as _join } from "node:fs";
 import { join } from "node:path";
-import { foundationDocsRoot, listFoundationDocs } from "@super-react/foundation-docs";
+import { foundationDocsRoot, listFoundationDocs } from "@super-react-foundation/foundation-docs";
 
 test("foundationDocsRoot exists and lists the ten core outlines, sorted", () => {
   assert.ok(existsSync(join(foundationDocsRoot(), "architecture.md")));
@@ -330,7 +330,7 @@ Build only the frontend of a feature: screens, components, routing, mock data, a
 UI can be built and reviewed before the API exists. A temporary service layer keeps the UI runnable without real calls.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Generate screens, components, routing, mock data, and a temporary service layer. Make no real API calls.
 4. When the API is implemented later, the temporary service layer is removed while the architecture is preserved.
@@ -367,11 +367,11 @@ Build only the backend integration layer of a feature: services, API clients, ho
 The data layer can be implemented and verified independently of the UI, and then connected.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Generate services, API clients, hooks, types, request models, response models, and error handling. Do not create UI.
 4. If the feature already has a temporary UI service layer, replace it with the real implementation behind the same interface.
-5. Run `super-react gate types` and resolve failures.
+5. Run `super-react-foundation gate types` and resolve failures.
 
 ## Example
 `/build-feature-api patient-dashboard`
@@ -383,7 +383,7 @@ Keep request/response types close to the API client. Centralize error handling.
 Creating UI here. Leaking server types into components.
 
 ## Troubleshooting
-Type failures after wiring → run `super-react gate types` and fix the reported mismatches.
+Type failures after wiring → run `super-react-foundation gate types` and fix the reported mismatches.
 ```
 
 `update-feature.spec.md`:
@@ -405,10 +405,10 @@ Update an existing feature end to end — UI, API, tests, and documentation — 
 Features change. This keeps the implementation and the feature plan from drifting apart.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md` and the current implementation.
 3. Apply the change across UI, API, and tests. Update the feature plan to match.
-4. Run `super-react gate all` and resolve failures.
+4. Run `super-react-foundation gate all` and resolve failures.
 
 ## Example
 `/update-feature patient-dashboard`
@@ -442,7 +442,7 @@ Update only the frontend of an existing feature.
 Sometimes only the UI changes; this keeps the change scoped.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Apply the UI change only. Leave the API layer untouched.
 
@@ -478,10 +478,10 @@ Update only the backend integration layer of an existing feature.
 API contracts change; this keeps the change scoped to the data layer.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Apply the API/services/types change only. Do not change UI.
-4. Run `super-react gate types` and resolve failures.
+4. Run `super-react-foundation gate types` and resolve failures.
 
 ## Example
 `/update-feature-api patient-dashboard`
@@ -493,7 +493,7 @@ Preserve the service interface so the UI keeps working.
 Breaking the interface the UI depends on without updating the UI.
 
 ## Troubleshooting
-Type failures → run `super-react gate types` and fix mismatches.
+Type failures → run `super-react-foundation gate types` and fix mismatches.
 ```
 
 - [ ] **Step 2: Append load assertions and run (RED→GREEN)**
@@ -506,7 +506,7 @@ test("all feature build/update specs require the foundation and embed the guard"
   for (const id of ids) {
     const spec = specs.find((s) => s.id === id);
     assert.equal(spec?.requiresFoundation, true, `${id} must require foundation`);
-    assert.match(spec?.body ?? "", /super-react guard --requires-foundation/, `${id} must embed the guard`);
+    assert.match(spec?.body ?? "", /super-react-foundation guard --requires-foundation/, `${id} must embed the guard`);
   }
 });
 ```
@@ -553,7 +553,7 @@ Integrate an external system (e.g. Keycloak, Stripe, Firebase) into the project.
 Integrations should be added consistently — packages, configuration, services, and documentation together — not ad hoc.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Ask the integration questions specific to the service.
 3. Install the required packages, configure environment variables (never commit secrets), and generate the service layer.
 4. Update `project-setup/` architecture docs and generate a short implementation guide.
@@ -590,8 +590,8 @@ Assess overall project quality and report problems with recommendations.
 Periodic architecture review catches drift, duplication, and dead code before they compound.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
-2. Run `super-react gate audit`.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
+2. Run `super-react-foundation gate audit`.
 3. Check: folder structure, dependency rules, code duplication, naming conventions, architecture violations, dead code, and unused files.
 4. Produce a report with concrete, prioritized recommendations.
 
@@ -627,10 +627,10 @@ Review one feature implementation against its plan and produce a scorecard.
 A feature is "done" only when it meets its acceptance criteria and quality bar.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md` and the implementation.
 3. Check: requirements compliance, acceptance criteria, performance, accessibility, security, and error handling.
-4. Run `super-react gate all` and include the result. Produce a scorecard.
+4. Run `super-react-foundation gate all` and include the result. Produce a scorecard.
 
 ## Example
 `/review-feature appointments`
@@ -664,10 +664,10 @@ Generate test coverage for a feature: unit, integration, component, and API test
 Consistent test coverage per the project's testing strategy keeps features safe to change.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md` and `project-setup/testing-strategy.md`.
 3. Generate unit, integration, component, and API tests following that strategy.
-4. Run `super-react gate test` and ensure they pass.
+4. Run `super-react-foundation gate test` and ensure they pass.
 
 ## Example
 `/generate-feature-tests billing`
@@ -679,7 +679,7 @@ Test behavior, not implementation detail. Cover the acceptance criteria.
 Tests that assert mocks instead of behavior.
 
 ## Troubleshooting
-Failing tests → fix the code or the test, then re-run `super-react gate test`.
+Failing tests → fix the code or the test, then re-run `super-react-foundation gate test`.
 ```
 
 `fix-project-issues.spec.md`:
@@ -701,10 +701,10 @@ Automatically fix common issues: lint, formatting, imports, TypeScript errors, a
 Mechanical issues should be fixed in one pass, not one at a time by hand.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
-2. Run `super-react fix` to apply lint and formatting fixes.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
+2. Run `super-react-foundation fix` to apply lint and formatting fixes.
 3. Resolve remaining TypeScript errors and architecture violations by hand.
-4. Run `super-react gate all` and report what was fixed and what remains.
+4. Run `super-react-foundation gate all` and report what was fixed and what remains.
 
 ## Example
 `/fix-project-issues`
@@ -716,7 +716,7 @@ Re-run the gates after fixing to confirm. Report anything that needs human judgm
 Claiming a clean project without re-running the gates.
 
 ## Troubleshooting
-If `super-react fix` cannot resolve an error, fix it manually and re-run the gates.
+If `super-react-foundation fix` cannot resolve an error, fix it manually and re-run the gates.
 ```
 
 - [ ] **Step 2: Append load assertions and run (RED→GREEN)**
@@ -757,9 +757,9 @@ git add -A && git commit -m "feat(specs): integrate + quality command specs"
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 const EXPECTED = [
   "analyze-project", "build-feature", "build-feature-api", "build-feature-ui",
@@ -778,7 +778,7 @@ test("all 15 commands are present", () => {
 test("every foundation-required spec embeds the guard instruction", () => {
   for (const spec of loadSpecs()) {
     if (spec.requiresFoundation) {
-      assert.match(spec.body, /super-react guard --requires-foundation/, `${spec.id} missing guard`);
+      assert.match(spec.body, /super-react-foundation guard --requires-foundation/, `${spec.id} missing guard`);
     }
   }
 });
@@ -797,7 +797,7 @@ test("the whole pack compiles to one SKILL.md per command plus a manifest", () =
   const files = compile(specs, claudeCodeAdapter);
   const skills = files.filter((f) => f.path.endsWith("SKILL.md"));
   assert.equal(skills.length, specs.length);
-  assert.ok(files.some((f) => f.path.endsWith("super-react.manifest.json")));
+  assert.ok(files.some((f) => f.path.endsWith("super-react-foundation.manifest.json")));
 });
 ```
 
@@ -807,7 +807,7 @@ test("init installs a skill for every command in the catalog", () => {
   const root = tempRoot();
   runInit({ projectRoot: root, agent: "claude-code" });
   const skillsDir = join(root, ".claude", "skills");
-  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-"));
+  const installed = readdirSync(skillsDir).filter((d) => d.startsWith("super-react-foundation-"));
   assert.equal(installed.length, 15);
 });
 ```
@@ -879,7 +879,7 @@ rm -rf /tmp/sr-p3 && mkdir -p /tmp/sr-p3
 pnpm sr init --cwd /tmp/sr-p3 >/dev/null
 ls /tmp/sr-p3/.claude/skills | sort
 ```
-Expected: 15 `super-react-*` skill directories.
+Expected: 15 `super-react-foundation-*` skill directories.
 
 - [ ] **Step 6: Commit**
 ```bash

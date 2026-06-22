@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { defaultState, readState, writeState, stateExists } from "@super-react/core";
+import { defaultState, readState, writeState, stateExists } from "@super-react-foundation/core";
 
 const roots: string[] = [];
 function tempRoot(): string {
@@ -41,8 +41,8 @@ test("readState throws when state is missing", () => {
 
 test("readState throws a clear error on corrupt JSON", () => {
   const root = tempRoot();
-  mkdirSync(join(root, ".super-react"), { recursive: true });
-  writeFileSync(join(root, ".super-react", "state.json"), "{ not json", "utf8");
+  mkdirSync(join(root, ".super-react-foundation"), { recursive: true });
+  writeFileSync(join(root, ".super-react-foundation", "state.json"), "{ not json", "utf8");
   assert.throws(() => readState(root), /not valid JSON/);
 });
 
@@ -51,7 +51,7 @@ test("readState rejects an unsupported state version", () => {
   const s = defaultState("claude-code");
   writeState(root, s);
   writeFileSync(
-    join(root, ".super-react", "state.json"),
+    join(root, ".super-react-foundation", "state.json"),
     JSON.stringify({ ...s, version: 2 }),
     "utf8",
   );

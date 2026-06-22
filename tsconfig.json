@@ -14,12 +14,12 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@super-react/core": ["packages/core/src/index.ts"],
-      "@super-react/compiler": ["packages/compiler/src/index.ts"],
-      "@super-react/adapter-claude-code": ["packages/adapters/claude-code/src/index.ts"],
-      "@super-react/specs": ["packages/specs/src/index.ts"],
-      "@super-react/templates": ["packages/templates/src/index.ts"],
-      "@super-react/ops": ["packages/ops/src/index.ts"]
+      "@super-react-foundation/core": ["packages/core/src/index.ts"],
+      "@super-react-foundation/compiler": ["packages/compiler/src/index.ts"],
+      "@super-react-foundation/adapter-claude-code": ["packages/adapters/claude-code/src/index.ts"],
+      "@super-react-foundation/specs": ["packages/specs/src/index.ts"],
+      "@super-react-foundation/templates": ["packages/templates/src/index.ts"],
+      "@super-react-foundation/ops": ["packages/ops/src/index.ts"]
     }
   },
   "include": ["packages/*/src", "packages/*/test", "packages/adapters/*/src", "packages/adapters/*/test"]

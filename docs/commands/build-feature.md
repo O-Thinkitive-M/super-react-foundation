@@ -11,7 +11,7 @@ Implement a complete feature (UI + API + tests) from its feature plan.
 One command takes an approved feature plan all the way to working, tested code, so building a feature is consistent and repeatable.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Implement UI, API, validation, state, error handling, types, and tests.
 

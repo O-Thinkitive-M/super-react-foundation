@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { loadSpecs } from "@super-react/specs";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 const repo = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 

@@ -1,10 +1,10 @@
-# super-react Engine & Install Pipeline — Implementation Plan (Plan 1 of 4)
+# super-react-foundation Engine & Install Pipeline — Implementation Plan (Plan 1 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the `super-react` engine so that `super-react init` compiles single-sourced markdown command specs into a Claude Code prompt pack, writes workflow state, renders the dashboard, and enforces the foundation lock in code.
+**Goal:** Build the `super-react-foundation` engine so that `super-react-foundation init` compiles single-sourced markdown command specs into a Claude Code prompt pack, writes workflow state, renders the dashboard, and enforces the foundation lock in code.
 
-**Architecture:** A pnpm monorepo of small focused packages. `core` holds types, workflow-state I/O, the spec parser, and the guard. `compiler` turns specs into files via an `AgentAdapter`. `adapter-claude-code` is the v1 adapter. `specs` ships the canonical command definitions. `cli` wires it all into the `super-react` binary (`init`/`sync`/`status`/`guard`) and renders the dashboard. Reasoning/generation lives in the markdown specs; deterministic work lives in code.
+**Architecture:** A pnpm monorepo of small focused packages. `core` holds types, workflow-state I/O, the spec parser, and the guard. `compiler` turns specs into files via an `AgentAdapter`. `adapter-claude-code` is the v1 adapter. `specs` ships the canonical command definitions. `cli` wires it all into the `super-react-foundation` binary (`init`/`sync`/`status`/`guard`) and renders the dashboard. Reasoning/generation lives in the markdown specs; deterministic work lives in code.
 
 **Tech Stack:** TypeScript (strict, ESM), Node ≥ 22.18, pnpm workspaces. Runtime dependencies are kept to **only `yaml`**. Dev tooling uses `tsx` (TypeScript loader) + `typescript` + `@types/node`. The framework's own tests use the built-in **`node:test`** runner, executed through the `tsx` loader.
 
@@ -18,7 +18,7 @@ Copied verbatim from the spec — every task implicitly includes these:
 - **Runtime deps: minimal, exact-pinned, audited.** In this plan only `yaml@2.6.1` is a runtime dep (in `core`). No `^`/`~` ranges on runtime deps.
 - **No postinstall scripts. No telemetry. No network access** in any package's code.
 - The entire prompt pack ships as **plain, auditable markdown**.
-- Package names: `@super-react/core`, `@super-react/compiler`, `@super-react/adapter-claude-code`, `@super-react/specs`; the CLI package is named **`super-react`** and provides the **`super-react`** binary.
+- Package names: `@super-react-foundation/core`, `@super-react-foundation/compiler`, `@super-react-foundation/adapter-claude-code`, `@super-react-foundation/specs`; the CLI package is named **`super-react-foundation`** and provides the **`super-react-foundation`** binary.
 - **Why `tsx` for dev/test:** Node refuses to strip types from files resolved under `node_modules`. pnpm symlinks workspace packages into `node_modules`, so cross-package TS imports won't run under bare `node`. `tsx` transpiles TS everywhere. `tsx` is a **dev dependency only** — it never ships to consumers, so the minimal-runtime-deps goal is preserved.
 
 ---
@@ -26,7 +26,7 @@ Copied verbatim from the spec — every task implicitly includes these:
 ## File Structure
 
 ```
-super-react/                              (repo root — already a git repo)
+super-react-foundation/                              (repo root — already a git repo)
   package.json                            # workspace root: scripts, devDeps
   pnpm-workspace.yaml
   tsconfig.json                           # strict base + path aliases (typecheck)
@@ -54,7 +54,7 @@ super-react/                              (repo root — already a git repo)
         compiler.test.ts
     adapters/
       claude-code/
-        package.json                      # name @super-react/adapter-claude-code
+        package.json                      # name @super-react-foundation/adapter-claude-code
         src/
           index.ts                        # claudeCodeAdapter: AgentAdapter
         test/
@@ -62,7 +62,7 @@ super-react/                              (repo root — already a git repo)
           __golden__/
             project-status.SKILL.md       # golden output
     specs/
-      package.json                        # name @super-react/specs
+      package.json                        # name @super-react-foundation/specs
       src/
         index.ts                          # loadSpecs() -> CommandSpec[]
       definitions/
@@ -71,7 +71,7 @@ super-react/                              (repo root — already a git repo)
       test/
         load-specs.test.ts
     cli/
-      package.json                        # name "super-react", bin -> src/cli.ts
+      package.json                        # name "super-react-foundation", bin -> src/cli.ts
       src/
         cli.ts                            # arg routing (node:util parseArgs) + shebang
         write.ts                          # writeEmitted(projectRoot, files)
@@ -96,7 +96,7 @@ super-react/                              (repo root — already a git repo)
 - Test: `packages/core/test/state.test.ts`
 
 **Interfaces:**
-- Produces: `Phase`, `CommandSpec`, `FeatureState`, `FoundationState`, `ProjectState`, `EmittedFile`, `AgentAdapter` (types); `defaultState(agent: string): ProjectState`, `readState(projectRoot: string): ProjectState`, `writeState(projectRoot: string, state: ProjectState): void`, `stateExists(projectRoot: string): boolean`, and constants `STATE_DIR=".super-react"`, `STATE_FILE="state.json"`, `statePath(projectRoot: string): string`.
+- Produces: `Phase`, `CommandSpec`, `FeatureState`, `FoundationState`, `ProjectState`, `EmittedFile`, `AgentAdapter` (types); `defaultState(agent: string): ProjectState`, `readState(projectRoot: string): ProjectState`, `writeState(projectRoot: string, state: ProjectState): void`, `stateExists(projectRoot: string): boolean`, and constants `STATE_DIR=".super-react-foundation"`, `STATE_FILE="state.json"`, `statePath(projectRoot: string): string`.
 
 - [ ] **Step 1: Create the workspace + tooling files**
 
@@ -123,7 +123,7 @@ dist/
 `package.json` (root):
 ```json
 {
-  "name": "super-react-monorepo",
+  "name": "super-react-foundation-monorepo",
   "private": true,
   "type": "module",
   "engines": { "node": ">=22.18" },
@@ -158,10 +158,10 @@ dist/
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@super-react/core": ["packages/core/src/index.ts"],
-      "@super-react/compiler": ["packages/compiler/src/index.ts"],
-      "@super-react/adapter-claude-code": ["packages/adapters/claude-code/src/index.ts"],
-      "@super-react/specs": ["packages/specs/src/index.ts"]
+      "@super-react-foundation/core": ["packages/core/src/index.ts"],
+      "@super-react-foundation/compiler": ["packages/compiler/src/index.ts"],
+      "@super-react-foundation/adapter-claude-code": ["packages/adapters/claude-code/src/index.ts"],
+      "@super-react-foundation/specs": ["packages/specs/src/index.ts"]
     }
   },
   "include": ["packages/*/src", "packages/*/test", "packages/adapters/*/src", "packages/adapters/*/test"]
@@ -173,7 +173,7 @@ dist/
 `packages/core/package.json`:
 ```json
 {
-  "name": "@super-react/core",
+  "name": "@super-react-foundation/core",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
@@ -247,7 +247,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ProjectState } from "./types.ts";
 
-export const STATE_DIR = ".super-react";
+export const STATE_DIR = ".super-react-foundation";
 export const STATE_FILE = "state.json";
 
 export function statePath(projectRoot: string): string {
@@ -273,7 +273,7 @@ export function readState(projectRoot: string): ProjectState {
   const path = statePath(projectRoot);
   if (!existsSync(path)) {
     throw new Error(
-      `super-react state not found at ${path}. Run "super-react init" first.`,
+      `super-react-foundation state not found at ${path}. Run "super-react-foundation init" first.`,
     );
   }
   return JSON.parse(readFileSync(path, "utf8")) as ProjectState;
@@ -300,7 +300,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { defaultState, readState, writeState, stateExists } from "@super-react/core";
+import { defaultState, readState, writeState, stateExists } from "@super-react-foundation/core";
 
 function tempRoot(): string {
   return mkdtempSync(join(tmpdir(), "sr-state-"));
@@ -382,7 +382,7 @@ git commit -m "feat(core): monorepo bootstrap + workflow state types & I/O"
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseSpec } from "@super-react/core";
+import { parseSpec } from "@super-react-foundation/core";
 
 const VALID = `---
 id: project-status
@@ -558,7 +558,7 @@ git commit -m "feat(core): markdown+YAML spec parser"
 - Test: `packages/compiler/test/compiler.test.ts`
 
 **Interfaces:**
-- Consumes: `AgentAdapter`, `CommandSpec`, `EmittedFile` from `@super-react/core`.
+- Consumes: `AgentAdapter`, `CommandSpec`, `EmittedFile` from `@super-react-foundation/core`.
 - Produces: `compile(specs: CommandSpec[], adapter: AgentAdapter): EmittedFile[]` — emits every command's files in spec order, then appends the manifest files.
 
 - [ ] **Step 1: Create the package skeleton**
@@ -566,11 +566,11 @@ git commit -m "feat(core): markdown+YAML spec parser"
 `packages/compiler/package.json`:
 ```json
 {
-  "name": "@super-react/compiler",
+  "name": "@super-react-foundation/compiler",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
-  "dependencies": { "@super-react/core": "workspace:*" }
+  "dependencies": { "@super-react-foundation/core": "workspace:*" }
 }
 ```
 
@@ -585,8 +585,8 @@ export * from "./compiler.ts";
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
-import { compile } from "@super-react/compiler";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
+import { compile } from "@super-react-foundation/compiler";
 
 function spec(id: string): CommandSpec {
   return {
@@ -633,7 +633,7 @@ Expected: FAIL — `compile` not defined.
 
 `packages/compiler/src/compiler.ts`:
 ```ts
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
 
 export function compile(specs: CommandSpec[], adapter: AgentAdapter): EmittedFile[] {
   const files: EmittedFile[] = [];
@@ -669,19 +669,19 @@ git commit -m "feat(compiler): compile specs through an AgentAdapter"
 - Test: `packages/adapters/claude-code/test/adapter.test.ts`, `packages/adapters/claude-code/test/__golden__/project-status.SKILL.md`
 
 **Interfaces:**
-- Consumes: `AgentAdapter`, `CommandSpec`, `EmittedFile` from `@super-react/core`.
-- Produces: `claudeCodeAdapter: AgentAdapter` (`id = "claude-code"`). `emitCommand` writes `.claude/skills/super-react-<id>/SKILL.md`; `emitManifest` writes `.claude/super-react.manifest.json`.
+- Consumes: `AgentAdapter`, `CommandSpec`, `EmittedFile` from `@super-react-foundation/core`.
+- Produces: `claudeCodeAdapter: AgentAdapter` (`id = "claude-code"`). `emitCommand` writes `.claude/skills/super-react-foundation-<id>/SKILL.md`; `emitManifest` writes `.claude/super-react-foundation.manifest.json`.
 
 - [ ] **Step 1: Create the package skeleton**
 
 `packages/adapters/claude-code/package.json`:
 ```json
 {
-  "name": "@super-react/adapter-claude-code",
+  "name": "@super-react-foundation/adapter-claude-code",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
-  "dependencies": { "@super-react/core": "workspace:*" }
+  "dependencies": { "@super-react-foundation/core": "workspace:*" }
 }
 ```
 
@@ -690,7 +690,7 @@ git commit -m "feat(compiler): compile specs through an AgentAdapter"
 `packages/adapters/claude-code/test/__golden__/project-status.SKILL.md`:
 ```md
 ---
-name: super-react-project-status
+name: super-react-foundation-project-status
 description: Project Status
 ---
 
@@ -711,8 +711,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import type { CommandSpec } from "@super-react/core";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
+import type { CommandSpec } from "@super-react-foundation/core";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -731,19 +731,19 @@ const statusSpec: CommandSpec = {
 test("emitCommand matches the golden SKILL.md", () => {
   const files = claudeCodeAdapter.emitCommand(statusSpec);
   assert.equal(files.length, 1);
-  assert.equal(files[0]?.path, ".claude/skills/super-react-project-status/SKILL.md");
+  assert.equal(files[0]?.path, ".claude/skills/super-react-foundation-project-status/SKILL.md");
   const golden = readFileSync(join(here, "__golden__", "project-status.SKILL.md"), "utf8");
   assert.equal(files[0]?.contents, golden);
 });
 
 test("foundation-required commands embed the guard instruction", () => {
   const files = claudeCodeAdapter.emitCommand({ ...statusSpec, requiresFoundation: true });
-  assert.match(files[0]!.contents, /super-react guard --requires-foundation/);
+  assert.match(files[0]!.contents, /super-react-foundation guard --requires-foundation/);
 });
 
 test("emitManifest lists all commands", () => {
   const files = claudeCodeAdapter.emitManifest([statusSpec]);
-  assert.equal(files[0]?.path, ".claude/super-react.manifest.json");
+  assert.equal(files[0]?.path, ".claude/super-react-foundation.manifest.json");
   const manifest = JSON.parse(files[0]!.contents) as { commands: { id: string }[] };
   assert.equal(manifest.commands[0]?.id, "project-status");
 });
@@ -762,11 +762,11 @@ Expected: FAIL — `claudeCodeAdapter` not defined.
 `packages/adapters/claude-code/src/index.ts`:
 ```ts
 import { join } from "node:path";
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
 
 function renderSkill(spec: CommandSpec): string {
   const guard = spec.requiresFoundation
-    ? "> **Before doing anything, run `super-react guard --requires-foundation`. " +
+    ? "> **Before doing anything, run `super-react-foundation guard --requires-foundation`. " +
       "If it exits non-zero, stop and show its message to the user.**\n\n"
     : "";
   const next = spec.nextSuggested
@@ -774,7 +774,7 @@ function renderSkill(spec: CommandSpec): string {
     : "\n";
   return (
     `---\n` +
-    `name: super-react-${spec.id}\n` +
+    `name: super-react-foundation-${spec.id}\n` +
     `description: ${spec.title}\n` +
     `---\n\n` +
     `${guard}${spec.body}${next}`
@@ -789,14 +789,14 @@ export const claudeCodeAdapter: AgentAdapter = {
   emitCommand(spec: CommandSpec): EmittedFile[] {
     return [
       {
-        path: `.claude/skills/super-react-${spec.id}/SKILL.md`,
+        path: `.claude/skills/super-react-foundation-${spec.id}/SKILL.md`,
         contents: renderSkill(spec),
       },
     ];
   },
   emitManifest(specs: CommandSpec[]): EmittedFile[] {
     const manifest = {
-      name: "super-react",
+      name: "super-react-foundation",
       version: 1,
       commands: specs.map((s) => ({
         id: s.id,
@@ -807,7 +807,7 @@ export const claudeCodeAdapter: AgentAdapter = {
     };
     return [
       {
-        path: ".claude/super-react.manifest.json",
+        path: ".claude/super-react-foundation.manifest.json",
         contents: JSON.stringify(manifest, null, 2) + "\n",
       },
     ];
@@ -849,7 +849,7 @@ git commit -m "feat(adapter-claude-code): emit SKILL.md + manifest, golden-teste
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultState, evaluateGuard } from "@super-react/core";
+import { defaultState, evaluateGuard } from "@super-react-foundation/core";
 
 test("blocks feature work before foundation is complete", () => {
   const state = defaultState("claude-code");
@@ -944,7 +944,7 @@ git commit -m "feat(core): code-enforced foundation-lock guard"
 - Test: `packages/specs/test/load-specs.test.ts`
 
 **Interfaces:**
-- Consumes: `parseSpec`, `CommandSpec` from `@super-react/core`.
+- Consumes: `parseSpec`, `CommandSpec` from `@super-react-foundation/core`.
 - Produces: `loadSpecs(): CommandSpec[]` (reads every `*.spec.md` in `packages/specs/definitions`, sorted by filename) and `SPECS_DIR: string` (absolute path).
 
 - [ ] **Step 1: Create the package skeleton**
@@ -952,12 +952,12 @@ git commit -m "feat(core): code-enforced foundation-lock guard"
 `packages/specs/package.json`:
 ```json
 {
-  "name": "@super-react/specs",
+  "name": "@super-react-foundation/specs",
   "version": "0.0.0",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
   "files": ["src", "definitions"],
-  "dependencies": { "@super-react/core": "workspace:*" }
+  "dependencies": { "@super-react-foundation/core": "workspace:*" }
 }
 ```
 
@@ -979,7 +979,7 @@ nextSuggested: null
 Show the current state of the project so the developer always knows what to do next.
 
 ## Steps
-1. Run `super-react status`.
+1. Run `super-react-foundation status`.
 2. Show the dashboard it prints, unchanged.
 ```
 
@@ -999,7 +999,7 @@ nextSuggested: review-feature
 Implement a complete feature (UI + API + tests) from its feature plan.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md`.
 3. Implement UI, API, validation, state, error handling, types, and tests.
 ```
@@ -1010,7 +1010,7 @@ Implement a complete feature (UI + API + tests) from its feature plan.
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { loadSpecs } from "@super-react/specs";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 test("loads and parses all spec definitions", () => {
   const specs = loadSpecs();
@@ -1043,8 +1043,8 @@ Expected: FAIL — `loadSpecs` not defined.
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { parseSpec } from "@super-react/core";
-import type { CommandSpec } from "@super-react/core";
+import { parseSpec } from "@super-react-foundation/core";
+import type { CommandSpec } from "@super-react-foundation/core";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const SPECS_DIR = join(here, "..", "definitions");
@@ -1081,24 +1081,24 @@ git commit -m "feat(specs): canonical spec definitions + loadSpecs"
 - Test: `packages/cli/test/dashboard.test.ts`, `packages/cli/test/init.test.ts`
 
 **Interfaces:**
-- Consumes: `compile` (`@super-react/compiler`), `claudeCodeAdapter` (`@super-react/adapter-claude-code`), `loadSpecs` (`@super-react/specs`), and `defaultState`/`readState`/`writeState`/`stateExists`/`evaluateGuard`/`ProjectState`/`EmittedFile` (`@super-react/core`).
-- Produces: `renderDashboard(state: ProjectState): string`; `writeEmitted(projectRoot: string, files: EmittedFile[]): void`; command runners `runInit({ projectRoot, agent })`, `runSync({ projectRoot })`, `runStatus({ projectRoot })`, `runGuard({ projectRoot, requiresFoundation })`, each returning a `number` exit code; a `super-react` binary dispatching `init|sync|status|guard`.
+- Consumes: `compile` (`@super-react-foundation/compiler`), `claudeCodeAdapter` (`@super-react-foundation/adapter-claude-code`), `loadSpecs` (`@super-react-foundation/specs`), and `defaultState`/`readState`/`writeState`/`stateExists`/`evaluateGuard`/`ProjectState`/`EmittedFile` (`@super-react-foundation/core`).
+- Produces: `renderDashboard(state: ProjectState): string`; `writeEmitted(projectRoot: string, files: EmittedFile[]): void`; command runners `runInit({ projectRoot, agent })`, `runSync({ projectRoot })`, `runStatus({ projectRoot })`, `runGuard({ projectRoot, requiresFoundation })`, each returning a `number` exit code; a `super-react-foundation` binary dispatching `init|sync|status|guard`.
 
 - [ ] **Step 1: Create the package skeleton**
 
 `packages/cli/package.json`:
 ```json
 {
-  "name": "super-react",
+  "name": "super-react-foundation",
   "version": "0.0.0",
   "type": "module",
-  "bin": { "super-react": "src/cli.ts" },
+  "bin": { "super-react-foundation": "src/cli.ts" },
   "files": ["src"],
   "dependencies": {
-    "@super-react/core": "workspace:*",
-    "@super-react/compiler": "workspace:*",
-    "@super-react/adapter-claude-code": "workspace:*",
-    "@super-react/specs": "workspace:*"
+    "@super-react-foundation/core": "workspace:*",
+    "@super-react-foundation/compiler": "workspace:*",
+    "@super-react-foundation/adapter-claude-code": "workspace:*",
+    "@super-react-foundation/specs": "workspace:*"
   }
 }
 ```
@@ -1109,12 +1109,12 @@ git commit -m "feat(specs): canonical spec definitions + loadSpecs"
 ```ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultState } from "@super-react/core";
+import { defaultState } from "@super-react-foundation/core";
 import { renderDashboard } from "../src/dashboard.ts";
 
 test("recommends analyze when nothing is done", () => {
   const out = renderDashboard(defaultState("claude-code"));
-  assert.match(out, /super-react/);
+  assert.match(out, /super-react-foundation/);
   assert.match(out, /Recommended next step:\s+\/analyze-project/);
 });
 
@@ -1140,7 +1140,7 @@ Expected: FAIL — `renderDashboard` not defined.
 
 `packages/cli/src/dashboard.ts`:
 ```ts
-import type { FeatureState, ProjectState } from "@super-react/core";
+import type { FeatureState, ProjectState } from "@super-react-foundation/core";
 
 function featureStatus(f: FeatureState): string {
   if (f.ui && f.api && f.tests) return "done";
@@ -1165,7 +1165,7 @@ export function renderDashboard(state: ProjectState): string {
   const analyzed =
     Object.keys(state.features).length > 0 || state.foundation.complete;
   const lines: string[] = [];
-  lines.push("================ super-react ================");
+  lines.push("================ super-react-foundation ================");
   lines.push("  guided React engineering");
   lines.push("--------------------------------------------");
   lines.push("PROJECT HEALTH");
@@ -1203,7 +1203,7 @@ Expected: PASS — `tests 2`, `pass 2`.
 ```ts
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import type { EmittedFile } from "@super-react/core";
+import type { EmittedFile } from "@super-react-foundation/core";
 
 export function writeEmitted(projectRoot: string, files: EmittedFile[]): void {
   for (const file of files) {
@@ -1216,10 +1216,10 @@ export function writeEmitted(projectRoot: string, files: EmittedFile[]): void {
 
 `packages/cli/src/commands/init.ts`:
 ```ts
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
-import { defaultState, readState, stateExists, writeState } from "@super-react/core";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
+import { defaultState, readState, stateExists, writeState } from "@super-react-foundation/core";
 import { writeEmitted } from "../write.ts";
 import { renderDashboard } from "../dashboard.ts";
 
@@ -1237,26 +1237,26 @@ export function runInit(opts: { projectRoot: string; agent: string }): number {
 
 `packages/cli/src/commands/sync.ts`:
 ```ts
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
 import { writeEmitted } from "../write.ts";
 
 export function runSync(opts: { projectRoot: string }): number {
   writeEmitted(opts.projectRoot, compile(loadSpecs(), claudeCodeAdapter));
-  console.log("super-react: prompt pack re-compiled.");
+  console.log("super-react-foundation: prompt pack re-compiled.");
   return 0;
 }
 ```
 
 `packages/cli/src/commands/status.ts`:
 ```ts
-import { readState, stateExists } from "@super-react/core";
+import { readState, stateExists } from "@super-react-foundation/core";
 import { renderDashboard } from "../dashboard.ts";
 
 export function runStatus(opts: { projectRoot: string }): number {
   if (!stateExists(opts.projectRoot)) {
-    console.error('super-react is not initialized here. Run "super-react init" first.');
+    console.error('super-react-foundation is not initialized here. Run "super-react-foundation init" first.');
     return 1;
   }
   console.log(renderDashboard(readState(opts.projectRoot)));
@@ -1266,7 +1266,7 @@ export function runStatus(opts: { projectRoot: string }): number {
 
 `packages/cli/src/commands/guard.ts`:
 ```ts
-import { evaluateGuard, readState } from "@super-react/core";
+import { evaluateGuard, readState } from "@super-react-foundation/core";
 
 export function runGuard(opts: { projectRoot: string; requiresFoundation: boolean }): number {
   const result = evaluateGuard(readState(opts.projectRoot), {
@@ -1324,7 +1324,7 @@ switch (command) {
   default:
     console.error(
       `Unknown command: ${command ?? "(none)"}\n` +
-        "Usage: super-react <init|sync|status|guard>",
+        "Usage: super-react-foundation <init|sync|status|guard>",
     );
     code = 2;
 }
@@ -1352,14 +1352,14 @@ test("init installs the prompt pack and writes state", () => {
   const root = tempRoot();
   const code = runInit({ projectRoot: root, agent: "claude-code" });
   assert.equal(code, 0);
-  assert.ok(existsSync(join(root, ".super-react", "state.json")));
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
-  assert.ok(existsSync(join(root, ".claude", "super-react.manifest.json")));
+  assert.ok(existsSync(join(root, ".super-react-foundation", "state.json")));
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "super-react-foundation.manifest.json")));
   const skill = readFileSync(
-    join(root, ".claude", "skills", "super-react-build-feature", "SKILL.md"),
+    join(root, ".claude", "skills", "super-react-foundation-build-feature", "SKILL.md"),
     "utf8",
   );
-  assert.match(skill, /super-react guard --requires-foundation/);
+  assert.match(skill, /super-react-foundation guard --requires-foundation/);
 });
 
 test("guard blocks feature work right after init (foundation incomplete)", () => {
@@ -1413,7 +1413,7 @@ git commit -m "feat(cli): init/sync/status/guard binary + dashboard"
 - §4.1 repo layout (monorepo, packages) → Task 1 + each package task. ✓
 - §5.1 markdown+YAML spec format → Task 2 (parser) + Task 6 (real specs). ✓
 - §5.2 compiler + `AgentAdapter` + Claude Code adapter + golden tests → Tasks 3, 4. ✓
-- §6.1 `.super-react/state.json` → Task 1. ✓
+- §6.1 `.super-react-foundation/state.json` → Task 1. ✓
 - §6.2 code-enforced foundation lock → Task 5 + wired in Task 7 (`guard`) + embedded in compiled skills (Task 4). ✓
 - §9.2 install/status dashboard → Task 7. ✓
 - §7 security: minimal pinned runtime deps (`yaml` only), no postinstall, no network → enforced by package.json files in every task + Global Constraints. ✓

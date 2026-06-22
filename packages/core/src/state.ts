@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ProjectState } from "./types.ts";
 
-export const STATE_DIR = ".super-react";
+export const STATE_DIR = ".super-react-foundation";
 export const STATE_FILE = "state.json";
 
 export function statePath(projectRoot: string): string {
@@ -28,20 +28,20 @@ export function readState(projectRoot: string): ProjectState {
   const path = statePath(projectRoot);
   if (!stateExists(projectRoot)) {
     throw new Error(
-      `super-react state not found at ${path}. Run "super-react init" first.`,
+      `super-react-foundation state not found at ${path}. Run "super-react-foundation init" first.`,
     );
   }
   let parsed: unknown;
   try {
     parsed = JSON.parse(readFileSync(path, "utf8"));
   } catch (cause) {
-    throw new Error(`super-react state at ${path} is not valid JSON.`, { cause });
+    throw new Error(`super-react-foundation state at ${path} is not valid JSON.`, { cause });
   }
   const state = parsed as ProjectState;
   if (state?.version !== 1) {
     const found = (state as { version?: unknown })?.version;
     throw new Error(
-      `super-react state at ${path} has unsupported version ${String(found)} (expected 1).`,
+      `super-react-foundation state at ${path} has unsupported version ${String(found)} (expected 1).`,
     );
   }
   return state;

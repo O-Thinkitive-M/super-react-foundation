@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import type { EmittedFile } from "@super-react/core";
+import type { EmittedFile } from "@super-react-foundation/core";
 
 export function writeEmitted(projectRoot: string, files: EmittedFile[]): void {
   for (const file of files) {

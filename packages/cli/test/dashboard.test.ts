@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { defaultState } from "@super-react/core";
+import { defaultState } from "@super-react-foundation/core";
 import { renderDashboard } from "../src/dashboard.ts";
 
 test("recommends analyze when nothing is done", () => {
   const out = renderDashboard(defaultState("claude-code"));
-  assert.match(out, /super-react/);
+  assert.match(out, /super-react-foundation/);
   assert.match(out, /Recommended next step:\s+\/analyze-project/);
 });
 

@@ -56,12 +56,12 @@ try {
     default:
       console.error(
         `Unknown command: ${command ?? "(none)"}\n` +
-          "Usage: super-react <init|sync|status|guard|scaffold|gate|fix>",
+          "Usage: super-react-foundation <init|sync|status|guard|scaffold|gate|fix>",
       );
       code = 2;
   }
 } catch (err) {
-  console.error(`super-react: ${err instanceof Error ? err.message : String(err)}`);
+  console.error(`super-react-foundation: ${err instanceof Error ? err.message : String(err)}`);
   code = 1;
 }
 process.exit(code);

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
-import { compile } from "@super-react/compiler";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
+import { compile } from "@super-react-foundation/compiler";
 
 function spec(id: string): CommandSpec {
   return {

@@ -15,10 +15,10 @@ Review one feature implementation against its plan and produce a scorecard.
 A feature is "done" only when it meets its acceptance criteria and quality bar.
 
 ## Steps
-1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+1. Run `super-react-foundation guard --requires-foundation`. If it exits non-zero, stop and show its message.
 2. Read `feature-plans/<name>.md` and the implementation.
 3. Check: requirements compliance, acceptance criteria, performance, accessibility, security, and error handling.
-4. Run `super-react gate all` and include the result. Produce a scorecard.
+4. Run `super-react-foundation gate all` and include the result. Produce a scorecard.
 
 ## Example
 `/review-feature appointments`

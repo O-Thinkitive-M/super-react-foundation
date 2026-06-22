@@ -1,8 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compile } from "@super-react/compiler";
-import { claudeCodeAdapter } from "@super-react/adapter-claude-code";
-import { loadSpecs } from "@super-react/specs";
+import { compile } from "@super-react-foundation/compiler";
+import { claudeCodeAdapter } from "@super-react-foundation/adapter-claude-code";
+import { loadSpecs } from "@super-react-foundation/specs";
 
 const EXPECTED = [
   "analyze-project", "build-feature", "build-feature-api", "build-feature-ui",
@@ -39,7 +39,7 @@ test("all 15 commands are present", () => {
 test("every foundation-required spec embeds the guard instruction", () => {
   for (const spec of loadSpecs()) {
     if (spec.requiresFoundation) {
-      assert.match(spec.body, /super-react guard --requires-foundation/, `${spec.id} missing guard`);
+      assert.match(spec.body, /super-react-foundation guard --requires-foundation/, `${spec.id} missing guard`);
     }
   }
 });
@@ -86,5 +86,5 @@ test("the whole pack compiles to one SKILL.md per command plus a manifest", () =
   const files = compile(specs, claudeCodeAdapter);
   const skills = files.filter((f) => f.path.endsWith("SKILL.md"));
   assert.equal(skills.length, specs.length);
-  assert.ok(files.some((f) => f.path.endsWith("super-react.manifest.json")));
+  assert.ok(files.some((f) => f.path.endsWith("super-react-foundation.manifest.json")));
 });

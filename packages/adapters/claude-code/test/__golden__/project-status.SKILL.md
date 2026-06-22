@@ -1,5 +1,5 @@
 ---
-name: super-react-project-status
+name: super-react-foundation-project-status
 description: Project Status
 ---
 

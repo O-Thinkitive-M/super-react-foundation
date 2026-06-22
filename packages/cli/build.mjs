@@ -27,4 +27,4 @@ cpSync(join(repo, "packages", "templates", "files"), join(root, "files"), { recu
 cpSync(join(repo, "packages", "specs", "definitions"), join(root, "definitions"), { recursive: true });
 cpSync(join(repo, "packages", "foundation-docs", "docs"), join(root, "docs"), { recursive: true });
 
-console.log("super-react: build complete (dist/cli.js + data dirs).");
+console.log("super-react-foundation: build complete (dist/cli.js + data dirs).");

@@ -1,8 +1,8 @@
-# super-react — Design Spec
+# super-react-foundation — Design Spec
 
 > **Status:** Approved design (brainstorming complete) — ready for implementation planning.
 > **Date:** 2026-06-21
-> **Working name:** `super-react` (npm availability to be verified before publishing)
+> **Working name:** `super-react-foundation` (npm availability to be verified before publishing)
 
 ---
 
@@ -40,7 +40,7 @@ Primary goal: *"Help developers convert requirement documents into a production-
 |---|---|---|
 | Form factor | **Node/npm CLI installer + prompt pack** | One `npx` install; deterministic helpers; renders dashboard |
 | Architecture | **Approach C — Hybrid** (canonical spec + compiler **and** thin deterministic CLI core) | Makes security & the foundation lock *real* while keeping universal agent reach |
-| Agent reach contract | **Shell-out to the CLI** (`super-react <op>`) | Lowest common denominator every present/future agent supports |
+| Agent reach contract | **Shell-out to the CLI** (`super-react-foundation <op>`) | Lowest common denominator every present/future agent supports |
 | Spec source of truth | **Markdown + YAML frontmatter** (body *is* the prompt) | Human-readable, auditable, single-sourced for in-agent skill + docs site |
 | v1 agent target | **Claude Code** | Dogfoodable now; adapters extend later with no command-content changes |
 | v1 command scope | **All 15 slash commands + `init`** | Full product surface from v1 |
@@ -73,7 +73,7 @@ requirement docs ──/analyze-project──▶ project-setup/ + feature-plans/
 ### 4.1 Repository layout (monorepo, single published package)
 
 ```
-super-react/
+super-react-foundation/
   packages/
     cli/             # the npx binary — wires core + compiler
     compiler/        # canonical spec -> agent formats
@@ -110,16 +110,16 @@ nextSuggested: setup-project-foundation
 ## Goal
 ...model-neutral instruction body — the prompt itself...
 ## Steps
-1. Run `super-react guard --phase analyze`
+1. Run `super-react-foundation guard --phase analyze`
 2. Discover & read all available documentation
 ...
 ```
 
-The body is **model-neutral prose**; deterministic work is referenced as `super-react <op>` shell calls so the same body runs on any agent. Every body follows the beginner-friendly doc template (§9).
+The body is **model-neutral prose**; deterministic work is referenced as `super-react-foundation <op>` shell calls so the same body runs on any agent. Every body follows the beginner-friendly doc template (§9).
 
 ### 5.2 Compiler & adapter interface
 
-`@super-react/compiler` walks every spec, applies one **adapter**, and writes target files. The adapter is the only agent-specific code:
+`@super-react-foundation/compiler` walks every spec, applies one **adapter**, and writes target files. The adapter is the only agent-specific code:
 
 ```ts
 interface AgentAdapter {
@@ -132,7 +132,7 @@ interface AgentAdapter {
 
 **Claude Code adapter (v1)** emits, per command: `.claude/skills/<id>/SKILL.md` (skill frontmatter + compiled body) + a slash-command entry, plus a plugin manifest indexing all commands. Frontmatter (`requiresFoundation`, `phase`, `nextSuggested`) compiles into guard calls and "next step" links.
 
-**Performance:** compilation is a local, synchronous file transform (milliseconds, no network), run at `init` and on `super-react sync` when specs change. **Zero per-command runtime cost** — the agent reads pre-compiled files.
+**Performance:** compilation is a local, synchronous file transform (milliseconds, no network), run at `init` and on `super-react-foundation sync` when specs change. **Zero per-command runtime cost** — the agent reads pre-compiled files.
 
 **Adding a future agent** = implement `AgentAdapter` once (Cursor → `.cursor/rules/*.mdc`, Codex → `AGENTS.md`, etc.). Command content is untouched; all commands light up automatically.
 
@@ -140,7 +140,7 @@ interface AgentAdapter {
 
 ## 6. Deterministic CLI Core
 
-### 6.1 Workflow state — `.super-react/state.json`
+### 6.1 Workflow state — `.super-react-foundation/state.json`
 
 Single source of truth for workflow state:
 
@@ -159,18 +159,18 @@ Single source of truth for workflow state:
 
 ### 6.2 Foundation lock — enforced in code
 
-Every feature command's compiled prose begins with `super-react guard --requires-foundation`. If `foundation.complete !== true`, the guard **exits non-zero** and prints the "Project Foundation Not Found → run /setup-project-foundation" message. The agent must honor the non-zero exit. The rule is also embedded in the prompt as defense-in-depth, but the **code check is authoritative**. General phase gating uses `guard --phase <p>`.
+Every feature command's compiled prose begins with `super-react-foundation guard --requires-foundation`. If `foundation.complete !== true`, the guard **exits non-zero** and prints the "Project Foundation Not Found → run /setup-project-foundation" message. The agent must honor the non-zero exit. The rule is also embedded in the prompt as defense-in-depth, but the **code check is authoritative**. General phase gating uses `guard --phase <p>`.
 
 ### 6.3 Scaffold engine (hybrid)
 
-`super-react scaffold`:
+`super-react-foundation scaffold`:
 - **Deterministic (pinned templates):** toolchain, folder structure, base configs, security defaults, pinned deps copied from `packages/templates/` (React 19 / MUI v7 / Vite 8 / Router v7 / TanStack Query v5 / Zustand v5 / RHF + zod / Orval-ready). Copied, not token-generated → reproducible, fast, no version hallucination.
 - **AI-adapted (per project):** `project-setup/*.md` foundation docs, config registries (nav, routes, status maps, env), per-domain tailoring — generated by the agent from analyzed requirements.
 - On success: writes `FOUNDATION_COMPLETE.md`, sets `foundation.complete = true` + `templateHash`; adapted layer tracked in state.
 
 ### 6.4 Quality gates
 
-`super-react gate [lint|types|test|audit|all]` wraps eslint / `tsc --noEmit` / vitest / `npm audit`, returning structured pass/fail. `/review-*` and any "production ready" status depend on these passing.
+`super-react-foundation gate [lint|types|test|audit|all]` wraps eslint / `tsc --noEmit` / vitest / `npm audit`, returning structured pass/fail. `/review-*` and any "production ready" status depend on these passing.
 
 ---
 
@@ -191,7 +191,7 @@ Every feature command's compiled prose begins with `super-react guard --requires
 
 | # | Command | Phase | Foundation req'd? | Key CLI ops | Produces |
 |---|---------|-------|:---:|---|---|
-| — | `init` (installer) | — | — | compile, install pack, write state, dashboard | `.claude/`, `.super-react/` |
+| — | `init` (installer) | — | — | compile, install pack, write state, dashboard | `.claude/`, `.super-react-foundation/` |
 | 1 | `/analyze-project` | analyze | no | init state | `project-setup/`, `feature-plans/` |
 | 2 | `/setup-project-foundation` | foundation | no → *completes it* | `scaffold`, `gate`, set `foundation.complete` | `src/`, `FOUNDATION_COMPLETE.md` |
 | 3 | `/project-status` | status | no | `status` | dashboard render |
@@ -222,7 +222,7 @@ Every feature command's compiled prose begins with `super-react guard --requires
 
 ```
 <project>/
-  .super-react/state.json
+  .super-react-foundation/state.json
   project-setup/                   # foundation docs — mirrors Project Setup/ depth
     architecture.md  folder-structure.md  routing.md  authentication.md
     state-management.md  api-strategy.md  error-handling.md
@@ -241,7 +241,7 @@ Rendered after `init` and by `/project-status`. Plain terminal, understandable i
 
 ```
   +--------------------------------------------------------------+
-  |  super-react  -  guided React engineering                    |
+  |  super-react-foundation  -  guided React engineering                    |
   +--------------------------------------------------------------+
   |  PROJECT HEALTH                                               |
   |    Requirements analyzed [x]   Foundation [x]   Agent: claude |
@@ -281,7 +281,7 @@ A developer can, without reading extensive docs: install the framework → analy
 
 ## 12. Open Questions / Future Phases
 
-- Verify npm name availability for `super-react` before publishing (fallback names: `react-forge`, `keystone-react`).
+- Verify npm name availability for `super-react-foundation` before publishing (fallback names: `react-forge`, `keystone-react`).
 - Future adapters: Cursor, Codex, Windsurf, Antigravity (one `AgentAdapter` each).
 - Future "lite" foundation profile for small projects.
 - Confirm exact pinned versions of templates at build time (the reference uses React 19 / MUI v7 / Vite 8 / Router v7 / TanStack Query v5 / Zustand v5).

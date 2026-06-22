@@ -15,19 +15,19 @@ after(() => {
   for (const r of roots) rmSync(r, { recursive: true, force: true });
 });
 
-test("sync removes orphaned super-react skills and writes the current pack", () => {
+test("sync removes orphaned super-react-foundation skills and writes the current pack", () => {
   const root = tempRoot();
-  const orphanDir = join(root, ".claude", "skills", "super-react-old-removed");
+  const orphanDir = join(root, ".claude", "skills", "super-react-foundation-old-removed");
   mkdirSync(orphanDir, { recursive: true });
   writeFileSync(join(orphanDir, "SKILL.md"), "stale", "utf8");
 
   assert.equal(runSync({ projectRoot: root }), 0);
 
   assert.equal(existsSync(orphanDir), false);
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-project-status", "SKILL.md")));
+  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
 });
 
-test("sync does not touch non-super-react skills", () => {
+test("sync does not touch non-super-react-foundation skills", () => {
   const root = tempRoot();
   const userDir = join(root, ".claude", "skills", "my-own-skill");
   mkdirSync(userDir, { recursive: true });

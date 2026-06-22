@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react/core";
+import type { AgentAdapter, CommandSpec, EmittedFile } from "@super-react-foundation/core";
 import { stringify as stringifyYaml } from "yaml";
 
 function renderSkill(spec: CommandSpec): string {
@@ -7,7 +7,7 @@ function renderSkill(spec: CommandSpec): string {
     ? `\n\n---\n**Recommended next step:** \`/${spec.nextSuggested}\`\n`
     : "\n";
   const frontmatter = stringifyYaml({
-    name: `super-react-${spec.id}`,
+    name: `super-react-foundation-${spec.id}`,
     description: spec.title,
   });
   return `---\n${frontmatter}---\n\n${spec.body}${next}`;
@@ -21,14 +21,14 @@ export const claudeCodeAdapter: AgentAdapter = {
   emitCommand(spec: CommandSpec): EmittedFile[] {
     return [
       {
-        path: `.claude/skills/super-react-${spec.id}/SKILL.md`,
+        path: `.claude/skills/super-react-foundation-${spec.id}/SKILL.md`,
         contents: renderSkill(spec),
       },
     ];
   },
   emitManifest(specs: CommandSpec[]): EmittedFile[] {
     const manifest = {
-      name: "super-react",
+      name: "super-react-foundation",
       version: 1,
       commands: specs.map((s) => ({
         id: s.id,
@@ -39,7 +39,7 @@ export const claudeCodeAdapter: AgentAdapter = {
     };
     return [
       {
-        path: ".claude/super-react.manifest.json",
+        path: ".claude/super-react-foundation.manifest.json",
         contents: JSON.stringify(manifest, null, 2) + "\n",
       },
     ];
