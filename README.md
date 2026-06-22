@@ -8,16 +8,26 @@ No magic. No lock-in. Just a repeatable process that produces maintainable React
 
 ---
 
-## Install in 30 seconds
+## Install
 
+**Once published to npm:**
 ```bash
 npx super-react init
 ```
 
-That one command:
+**Pre-release (today):** build from this repo and run the packed CLI:
+```bash
+pnpm install && pnpm --filter super-react build
+# then run the bundled CLI:
+node packages/cli/dist/cli.js init
+```
+
+That init command:
 1. Installs the super-react CLI locally (no global install needed).
 2. Writes the agent prompt pack into your project so your AI agent knows all 15 commands.
 3. Prints the status dashboard so you can see where you stand.
+
+See `RELEASE.md` for the publish steps.
 
 After init, run your first command inside your AI agent (e.g. Claude Code):
 
