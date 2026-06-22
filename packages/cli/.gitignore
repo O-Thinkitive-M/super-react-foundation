@@ -1,0 +1,5 @@
+dist/
+files/
+definitions/
+docs/
+*.tgz

@@ -4,12 +4,14 @@
   "type": "module",
   "engines": { "node": ">=22.18" },
   "scripts": {
+    "build": "pnpm --filter super-react build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --import tsx --test \"packages/**/test/**/*.test.ts\"",
     "sr": "node --import tsx packages/cli/src/cli.ts"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
+    "esbuild": "0.28.1",
     "tsx": "4.19.2",
     "typescript": "5.8.2"
   }

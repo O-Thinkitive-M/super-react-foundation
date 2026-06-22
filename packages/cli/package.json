@@ -2,9 +2,12 @@
   "name": "super-react",
   "version": "0.0.0",
   "type": "module",
-  "bin": { "super-react": "src/cli.ts" },
-  "files": ["src"],
-  "dependencies": {
+  "bin": { "super-react": "dist/cli.js" },
+  "files": ["dist", "files", "definitions", "docs"],
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
     "@super-react/core": "workspace:*",
     "@super-react/compiler": "workspace:*",
     "@super-react/adapter-claude-code": "workspace:*",
