@@ -60,3 +60,10 @@ test("all feature build/update specs require the foundation and embed the guard"
     assert.match(spec?.body ?? "", /super-react guard --requires-foundation/, `${id} must embed the guard`);
   }
 });
+
+test("integrate and quality specs load with correct phases and ops", () => {
+  const specs = loadSpecs();
+  assert.equal(specs.find((s) => s.id === "connect-external-service")?.phase, "integrate");
+  assert.equal(specs.find((s) => s.id === "review-feature")?.nextSuggested, "generate-feature-tests");
+  assert.deepEqual(specs.find((s) => s.id === "fix-project-issues")?.cliOps, ["fix", "gate"]);
+});
