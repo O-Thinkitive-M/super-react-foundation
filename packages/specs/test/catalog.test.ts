@@ -81,10 +81,12 @@ test("every spec body has the seven sections in order", () => {
   }
 });
 
-test("the whole pack compiles to one SKILL.md per command plus a manifest", () => {
+test("the whole pack compiles to one command file per command plus a manifest", () => {
   const specs = loadSpecs();
   const files = compile(specs, claudeCodeAdapter);
-  const skills = files.filter((f) => f.path.endsWith("SKILL.md"));
-  assert.equal(skills.length, specs.length);
+  const commands = files.filter(
+    (f) => f.path.startsWith(".claude/commands/") && f.path.endsWith(".md"),
+  );
+  assert.equal(commands.length, specs.length);
   assert.ok(files.some((f) => f.path.endsWith("super-react-foundation.manifest.json")));
 });

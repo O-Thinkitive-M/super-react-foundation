@@ -21,11 +21,11 @@ const statusSpec: CommandSpec = {
   body: "## Goal\nShow the dashboard.",
 };
 
-test("emitCommand matches the golden SKILL.md", () => {
+test("emitCommand writes .claude/commands/<id>.md matching the golden", () => {
   const files = claudeCodeAdapter.emitCommand(statusSpec);
   assert.equal(files.length, 1);
-  assert.equal(files[0]?.path, ".claude/skills/super-react-foundation-project-status/SKILL.md");
-  const golden = readFileSync(join(here, "__golden__", "project-status.SKILL.md"), "utf8");
+  assert.equal(files[0]?.path, ".claude/commands/project-status.md");
+  const golden = readFileSync(join(here, "__golden__", "project-status.command.md"), "utf8");
   assert.equal(files[0]?.contents, golden);
 });
 
@@ -47,8 +47,8 @@ test("emitManifest lists all commands", () => {
 test("escapes special characters in frontmatter values", () => {
   const files = claudeCodeAdapter.emitCommand({ ...statusSpec, id: "x", title: "Plan: build it now" });
   assert.equal(files.length, 1);
+  assert.equal(files[0]?.path, ".claude/commands/x.md");
   const between = files[0]!.contents.split("---");
-  const data = parseYaml(between[1]!) as { name: string; description: string };
-  assert.equal(data.name, "super-react-foundation-x");
+  const data = parseYaml(between[1]!) as { description: string };
   assert.equal(data.description, "Plan: build it now");
 });

@@ -15,25 +15,41 @@ after(() => {
   for (const r of roots) rmSync(r, { recursive: true, force: true });
 });
 
-test("sync removes orphaned super-react-foundation skills and writes the current pack", () => {
+test("sync removes orphaned managed commands and writes the current pack", () => {
   const root = tempRoot();
-  const orphanDir = join(root, ".claude", "skills", "super-react-foundation-old-removed");
-  mkdirSync(orphanDir, { recursive: true });
-  writeFileSync(join(orphanDir, "SKILL.md"), "stale", "utf8");
+  const commandsDir = join(root, ".claude", "commands");
+  mkdirSync(commandsDir, { recursive: true });
+  const orphan = join(commandsDir, "old-removed.md");
+  writeFileSync(orphan, "---\n---\n<!-- managed by super-react-foundation -->\nstale\n", "utf8");
 
   assert.equal(runSync({ projectRoot: root }), 0);
 
-  assert.equal(existsSync(orphanDir), false);
-  assert.ok(existsSync(join(root, ".claude", "skills", "super-react-foundation-project-status", "SKILL.md")));
+  assert.equal(existsSync(orphan), false);
+  assert.ok(existsSync(join(commandsDir, "project-status.md")));
 });
 
-test("sync does not touch non-super-react-foundation skills", () => {
+test("sync migrates away the legacy 0.1.0 skills directory", () => {
   const root = tempRoot();
-  const userDir = join(root, ".claude", "skills", "my-own-skill");
-  mkdirSync(userDir, { recursive: true });
-  writeFileSync(join(userDir, "SKILL.md"), "mine", "utf8");
+  const legacyDir = join(root, ".claude", "skills", "super-react-foundation-old-removed");
+  mkdirSync(legacyDir, { recursive: true });
+  writeFileSync(join(legacyDir, "SKILL.md"), "stale", "utf8");
 
   runSync({ projectRoot: root });
 
-  assert.ok(existsSync(join(userDir, "SKILL.md")));
+  assert.equal(existsSync(legacyDir), false);
+});
+
+test("sync does not touch the user's own commands or skills", () => {
+  const root = tempRoot();
+  const userCmd = join(root, ".claude", "commands", "my-own.md");
+  mkdirSync(join(root, ".claude", "commands"), { recursive: true });
+  writeFileSync(userCmd, "# my own command, no marker\n", "utf8");
+  const userSkill = join(root, ".claude", "skills", "my-own-skill");
+  mkdirSync(userSkill, { recursive: true });
+  writeFileSync(join(userSkill, "SKILL.md"), "mine", "utf8");
+
+  runSync({ projectRoot: root });
+
+  assert.ok(existsSync(userCmd));
+  assert.ok(existsSync(join(userSkill, "SKILL.md")));
 });
