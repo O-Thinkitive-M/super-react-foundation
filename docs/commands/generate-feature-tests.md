@@ -1,0 +1,29 @@
+# /generate-feature-tests
+
+- **Phase:** quality
+- **Requires foundation:** true
+- **Next:** —
+
+## Purpose
+Generate test coverage for a feature: unit, integration, component, and API tests.
+
+## Why it exists
+Consistent test coverage per the project's testing strategy keeps features safe to change.
+
+## Steps
+1. Run `super-react guard --requires-foundation`. If it exits non-zero, stop and show its message.
+2. Read `feature-plans/<name>.md` and `project-setup/testing-strategy.md`.
+3. Generate unit, integration, component, and API tests following that strategy.
+4. Run `super-react gate test` and ensure they pass.
+
+## Example
+`/generate-feature-tests billing`
+
+## Best Practices
+Test behavior, not implementation detail. Cover the acceptance criteria.
+
+## Common Mistakes
+Tests that assert mocks instead of behavior.
+
+## Troubleshooting
+Failing tests → fix the code or the test, then re-run `super-react gate test`.

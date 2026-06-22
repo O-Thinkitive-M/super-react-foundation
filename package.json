@@ -7,7 +7,8 @@
     "build": "pnpm --filter super-react build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --import tsx --test \"packages/**/test/**/*.test.ts\"",
-    "sr": "node --import tsx packages/cli/src/cli.ts"
+    "sr": "node --import tsx packages/cli/src/cli.ts",
+    "gen-docs": "node --import tsx scripts/gen-docs.mjs"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
