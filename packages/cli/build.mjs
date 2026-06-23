@@ -23,8 +23,16 @@ chmodSync(join(root, "dist", "cli.js"), 0o755);
 
 // Ship the data dirs adjacent to dist so the loaders' join(here,"..",<dir>) resolves:
 // here === packages/cli/dist  ->  ../files | ../definitions | ../docs
-cpSync(join(repo, "packages", "templates", "files"), join(root, "files"), { recursive: true });
-cpSync(join(repo, "packages", "specs", "definitions"), join(root, "definitions"), { recursive: true });
-cpSync(join(repo, "packages", "foundation-docs", "docs"), join(root, "docs"), { recursive: true });
+// Clean each destination first so renamed/removed source files don't linger in
+// the build output (and thus never get scaffolded into user projects).
+for (const [src, destName] of [
+  [join(repo, "packages", "templates", "files"), "files"],
+  [join(repo, "packages", "specs", "definitions"), "definitions"],
+  [join(repo, "packages", "foundation-docs", "docs"), "docs"],
+]) {
+  const dest = join(root, destName);
+  rmSync(dest, { recursive: true, force: true });
+  cpSync(src, dest, { recursive: true });
+}
 
 console.log("super-react-foundation: build complete (dist/cli.js + data dirs).");

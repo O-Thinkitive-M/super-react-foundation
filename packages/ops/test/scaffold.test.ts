@@ -1,10 +1,10 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultState, writeState, readState } from "@super-react-foundation/core";
-import { scaffoldFoundation } from "@super-react-foundation/ops";
+import { scaffoldFoundation, withStateLibDeps } from "@super-react-foundation/ops";
 import type { Exec } from "@super-react-foundation/ops";
 
 const roots: string[] = [];
@@ -79,6 +79,51 @@ test("scaffold seeds project-setup/ from the foundation-docs outlines", async ()
   await scaffoldFoundation({ projectRoot: root, install: noInstall });
   assert.ok(existsSync(join(root, "project-setup", "architecture.md")));
   assert.ok(existsSync(join(root, "project-setup", "data-structures.md")));
+  assert.ok(existsSync(join(root, "project-setup", "state-management.md")));
+});
+
+test("scaffold defaults to redux and wires redux deps + doc", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  const result = await scaffoldFoundation({ projectRoot: root, install: noInstall });
+  assert.equal(result.stateLib, "redux");
+  assert.equal(readState(root).foundation.stateLib, "redux");
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  assert.ok(pkg.dependencies["@reduxjs/toolkit"]);
+  assert.ok(pkg.dependencies["react-redux"]);
+  assert.ok(!pkg.dependencies["zustand"]);
+  const doc = readFileSync(join(root, "project-setup", "state-management.md"), "utf8");
+  assert.match(doc, /Redux Toolkit/);
+});
+
+test("scaffold with zustand wires zustand deps + doc", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  const result = await scaffoldFoundation({ projectRoot: root, install: noInstall, stateLib: "zustand" });
+  assert.equal(result.stateLib, "zustand");
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  assert.ok(pkg.dependencies["zustand"]);
+  assert.ok(!pkg.dependencies["@reduxjs/toolkit"]);
+  const doc = readFileSync(join(root, "project-setup", "state-management.md"), "utf8");
+  assert.match(doc, /Zustand/);
+});
+
+test("templateHash differs between redux and zustand", async () => {
+  const a = tempRoot();
+  const b = tempRoot();
+  writeState(a, defaultState("claude-code"));
+  writeState(b, defaultState("claude-code"));
+  const ra = await scaffoldFoundation({ projectRoot: a, install: noInstall, stateLib: "redux" });
+  const rb = await scaffoldFoundation({ projectRoot: b, install: noInstall, stateLib: "zustand" });
+  assert.notEqual(ra.templateHash, rb.templateHash);
+});
+
+test("withStateLibDeps injects and sorts deps without dropping existing ones", () => {
+  const base = JSON.stringify({ dependencies: { react: "19.0.0" } });
+  const redux = JSON.parse(withStateLibDeps(base, "redux"));
+  assert.deepEqual(Object.keys(redux.dependencies), [...Object.keys(redux.dependencies)].sort());
+  assert.ok(redux.dependencies.react);
+  assert.ok(redux.dependencies["@reduxjs/toolkit"]);
 });
 
 test("defaultInstall runs pnpm install and throws on non-zero exit", async () => {

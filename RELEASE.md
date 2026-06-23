@@ -24,7 +24,7 @@ If the name is already taken, resolve the conflict before continuing.
 ```bash
 pnpm install       # ensure a clean lockfile
 pnpm typecheck     # tsc --noEmit; must exit 0 with no errors
-pnpm test          # must be 70/70 pass, 0 fail
+pnpm test          # full suite must pass (78/78), 0 fail
 ```
 
 All three commands must exit cleanly before proceeding.
@@ -62,8 +62,10 @@ mkdir /tmp/sr-smoke && cd /tmp/sr-smoke
 npm install /path/to/packages/cli/super-react-foundation-X.Y.Z.tgz
 npx super-react-foundation init  --cwd /tmp/sr-smoke
 npx super-react-foundation scaffold --no-install --cwd /tmp/sr-smoke
-ls /tmp/sr-smoke/.claude/skills | grep -c '^super-react-foundation-'
+ls /tmp/sr-smoke/.claude/commands | grep -c '\.md$'
 # Expected: 15
+# Also verify the scaffold tree: src/features/ exists, no top-level src/pages/
+ls /tmp/sr-smoke/src
 ```
 
 Clean up:

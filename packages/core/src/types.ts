@@ -30,6 +30,8 @@ export interface FoundationState {
   complete: boolean;
   completedAt: string | null;
   templateHash: string | null;
+  /** Client-state library wired during scaffold ("redux" | "zustand"). */
+  stateLib?: "redux" | "zustand";
 }
 
 export interface ProjectState {
