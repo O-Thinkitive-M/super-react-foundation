@@ -16,6 +16,7 @@ const { positionals, values } = parseArgs({
     cwd: { type: "string", default: process.cwd() },
     "no-install": { type: "boolean", default: false },
     force: { type: "boolean", default: false },
+    state: { type: "string" },
   },
 });
 
@@ -45,6 +46,7 @@ try {
         projectRoot,
         noInstall: values["no-install"] as boolean,
         force: values.force as boolean,
+        state: values.state as string | undefined,
       });
       break;
     case "gate":

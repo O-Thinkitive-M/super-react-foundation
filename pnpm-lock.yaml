@@ -41,6 +41,9 @@ importers:
       '@super-react-foundation/core':
         specifier: workspace:*
         version: link:../core
+      '@super-react-foundation/foundation-docs':
+        specifier: workspace:*
+        version: link:../foundation-docs
       '@super-react-foundation/ops':
         specifier: workspace:*
         version: link:../ops

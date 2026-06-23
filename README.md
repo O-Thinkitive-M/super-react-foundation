@@ -47,6 +47,44 @@ After init, **reload your agent** so it picks up the new commands (in Claude Cod
 /analyze-project
 ```
 
+### Where to run it — the framework attaches to your project root
+
+super-react-foundation installs **into the directory you run it from**. That directory becomes your *project root*. Run it in the **wrong** place and you get a stray, half-set-up project.
+
+There are two supported starting points:
+
+| You already have a React app | You're starting from scratch |
+|---|---|
+| `cd` **into the app's root** (the folder with its `package.json`) and run init there. | Make one empty folder, `cd` into it, and run init. `scaffold` creates the React app for you. |
+
+```bash
+# existing app — run it INSIDE the app folder, not its parent
+cd my-react-app
+npx super-react-foundation init
+
+# from scratch — one folder, then let scaffold build the app
+mkdir my-app && cd my-app
+npx super-react-foundation init
+```
+
+**The framework is deliberately not tangled into your app code.** Init and scaffold only ever write framework artifacts at the project root, *next to* your app — never inside `src/`:
+
+```
+my-app/                     ← project root (where you ran init)
+├── .claude/commands/       ← framework: the slash commands
+├── project-setup/          ← framework: your architecture docs
+├── feature-plans/          ← framework: what to build
+├── FOUNDATION_COMPLETE.md  ← framework: the foundation marker
+│
+├── src/                    ← your React app (untouched by the framework)
+├── package.json            ← your app (scaffold adds deps; nothing framework-specific)
+└── vite.config.ts          ← your app
+```
+
+You can delete every framework artifact and your React app still builds and runs. Nothing in `src/`, `vite.config.ts`, `tsconfig.json`, or your component code imports from or depends on super-react-foundation.
+
+> **Common mistake:** running init in the *parent* of your React app. That scaffolds a second app one level up. If you see a `src/` appear next to your existing app folder, you ran it one directory too high — delete the stray files and re-run from inside the app.
+
 ---
 
 ## The workflow

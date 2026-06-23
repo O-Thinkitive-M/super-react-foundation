@@ -1,6 +1,6 @@
 {
   "name": "super-react-foundation",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Guided React engineering for AI coding agents — a prompt pack + CLI that enforces a strict analyze → scaffold → build → integrate → review workflow.",
   "keywords": ["react", "ai", "agent", "claude-code", "scaffold", "prompt-pack", "cli", "code-generation"],
   "license": "MIT",
@@ -20,6 +20,7 @@
     "@super-react-foundation/compiler": "workspace:*",
     "@super-react-foundation/adapter-claude-code": "workspace:*",
     "@super-react-foundation/specs": "workspace:*",
-    "@super-react-foundation/ops": "workspace:*"
+    "@super-react-foundation/ops": "workspace:*",
+    "@super-react-foundation/foundation-docs": "workspace:*"
   }
 }
