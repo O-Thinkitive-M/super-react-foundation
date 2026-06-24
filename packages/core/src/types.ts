@@ -32,6 +32,8 @@ export interface FoundationState {
   templateHash: string | null;
   /** Client-state library wired during scaffold ("redux" | "zustand"). */
   stateLib?: "redux" | "zustand";
+  /** API transport wired during scaffold ("client" = hand-rolled | "sdk" = Orval). */
+  apiMode?: "client" | "sdk";
 }
 
 export interface ProjectState {

@@ -318,3 +318,42 @@ export const usersApi = {
 
 - **Rules:** generated code is committed but never hand-edited; regenerate via `api:gen` on spec change; keep generated output under `src/api/generated/`.
 - **Decision record:** capture SDK vs hand-rolled in `project-setup` so the whole team uses one approach.
+
+## What the scaffold actually wires (this project)
+
+The transport is chosen **at setup time** and the scaffold seeds a *working* layer
+either way — you never start from an empty `api/` folder.
+
+### Default — hand-rolled typed client (no flag)
+
+Seeded files: `src/api/client.ts` (one `get/post/put/patch/del` client with auth
+injection, refresh-on-401, typed `ApiError`), `src/api/errors.ts`,
+`src/api/query-keys.ts`, `src/api/query-client.ts`. Token access is stubbed in
+`src/auth/token.ts`. Add a domain under `src/api/<domain>/` (`requests.ts` +
+`hooks.ts`); components import only the hooks.
+
+### SDK option — Orval pipeline (`scaffold --sdk`)
+
+When the SDK option is chosen, the scaffold **replaces** the hand-rolled
+`src/api/client.ts` with an Orval-generated client and seeds:
+
+| File | Role |
+|---|---|
+| `src/api/axios-instance.ts` | the one `customAxios` mutator (auth, audit, 401) |
+| `orval.config.ts` | react-query + axios + tags-split pipeline |
+| `orval-transformer.cjs` | repairs spec defects before generation |
+| `scripts/check-node.cjs` + `preinstall` | Node ≥ 22.18 guard (Orval 8) |
+| `generate-sdk` script | `orval --config ./orval.config.ts` |
+
+`src/sdk/**` does not exist until you run `npm run generate-sdk`. **Never hand-edit
+it.** Until your backend publishes its OpenAPI URL, `orval.config.ts` `input.target`
+defaults to the **public Swagger Petstore** so generation works immediately as a
+demo. Replace it by setting `OPENAPI_SPEC_URL` (env/CI secret) **or** editing the
+fallback URL in `orval.config.ts`. **Record your real spec URL here** so the team
+uses it:
+
+```
+OpenAPI spec URL: <fill in when the backend publishes it>
+```
+
+> See `how-it-works.md` for how this fits the boot path, and how the demo is replaced.

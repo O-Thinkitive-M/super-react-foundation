@@ -1,10 +1,47 @@
 # super-react-foundation
 
-> Guided React engineering — one command per step, zero drift.
+> Build production React apps **10x faster with Claude Code** — one command per step, zero drift.
 
-**super-react-foundation** is a prompt pack and CLI toolkit that turns an AI coding agent into a structured React development partner. Instead of freeform chat, every action follows a strict, auditable workflow: analyze requirements → scaffold a production foundation → build features one at a time → integrate external services → review and test. The agent always knows where the project stands and what to do next.
+**super-react-foundation** turns Claude Code into a structured React engineering partner. Instead of freeform "please build me an app" chat that drifts and rewrites itself, you get a strict, auditable workflow exposed as slash commands: **analyze requirements → scaffold a production foundation → build features one at a time → integrate services → review & test.** Claude always knows where the project stands and what to do next.
 
 No magic. No lock-in. Just a repeatable process that produces maintainable React apps.
+
+---
+
+## Why it's 10x faster with Claude Code
+
+The slow part of AI-built React apps isn't typing code — it's the **re-deciding, re-explaining, and re-doing**. This framework removes all three:
+
+| Without the framework | With super-react-foundation |
+|---|---|
+| You re-explain your stack/conventions every session | A **complete `project-setup/` knowledge base (30 docs)** is seeded once and Claude reads it every time |
+| Claude invents a new folder/router/state pattern each feature | One **opinionated, working foundation** — router, i18n, API layer, theme — scaffolded deterministically |
+| "Build the whole app" → drift, half-finished screens | **One feature at a time**, gated; feature commands stay locked until the foundation is solid |
+| You hand-wire auth, forms, tables, dates from scratch each time | **Config-driven primitives + 30 prod-level pattern docs** Claude follows verbatim |
+| Output quality depends on your prompt that day | **Deterministic CLI** owns the boilerplate; Claude only fills in the project-specific decisions |
+| README/docs rot as the app changes | Claude keeps your project **README in sync** (asking first) — see [readme-maintenance](packages/foundation-docs/docs/readme-maintenance.md) |
+
+The result: Claude spends its tokens on **your** product logic, not on re-deriving the same foundation every project.
+
+---
+
+## Quickstart with Claude Code (≈5 minutes)
+
+```bash
+# 1. In your project folder (new empty dir, or an existing React app root):
+npx super-react-foundation init        # writes the slash commands into .claude/commands/
+
+# 2. Reload Claude Code so it picks up the new commands (new session / reload window).
+
+# 3. In Claude Code, drive the workflow with slash commands:
+/analyze-project                       # point it at your SRS / Figma / existing code
+/setup-project-foundation              # scaffolds a working app (prompts Redux/Zustand; add --sdk for an Orval SDK)
+/build-feature <name>                  # build features one at a time
+/review-feature <name>                 # adversarial review, then /generate-feature-tests
+/project-status                        # the dashboard — run any time
+```
+
+That's the whole loop. Claude reads `project-setup/` before every step, builds to the feature plan, and keeps the dashboard and README current.
 
 ---
 
@@ -98,7 +135,7 @@ analyze → setup-foundation → build / update features → integrate → revie
 | Phase | What happens |
 |-------|-------------|
 | **analyze** | Read your requirements (SRS, BRD, Figma notes, existing code). Write `project-setup/` and `feature-plans/`. |
-| **foundation** | Scaffold the full React app (`super-react-foundation scaffold`). Locked until requirements are analyzed. |
+| **foundation** | Scaffold a **working** React app — router, i18n, API layer, theme, demo screen — plus the complete 30-doc `project-setup/` knowledge base. Choose state (Redux/Zustand) and API transport (typed client or `--sdk` Orval). Locked until requirements are analyzed. |
 | **feature** | Build or update UI, API layer, and feature plans one feature at a time. Locked until foundation is ready. |
 | **integrate** | Wire external services (auth, payments, third-party APIs). |
 | **quality** | Review features, review architecture, generate and run tests, fix issues. |

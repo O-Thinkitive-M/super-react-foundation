@@ -24,7 +24,7 @@ Features change. This keeps the implementation and the feature plan from driftin
 `/update-feature patient-dashboard`
 
 ## Best Practices
-Update the feature plan in the same change as the code. Keep tests green.
+Update the feature plan in the same change as the code. Keep tests green. If the change alters scripts, env vars, or `project-setup/` docs, offer to sync the project `README.md`'s managed block per `project-setup/readme-maintenance.md` — **always ask the user first**, update only the marked block, never duplicate the file.
 
 ## Common Mistakes
 Changing code without updating the plan. Skipping the gate run.

@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { defaultState, writeState, readState } from "@super-react-foundation/core";
-import { scaffoldFoundation, withStateLibDeps } from "@super-react-foundation/ops";
+import { scaffoldFoundation, withScaffoldDeps } from "@super-react-foundation/ops";
 import type { Exec } from "@super-react-foundation/ops";
 
 const roots: string[] = [];
@@ -118,12 +118,70 @@ test("templateHash differs between redux and zustand", async () => {
   assert.notEqual(ra.templateHash, rb.templateHash);
 });
 
-test("withStateLibDeps injects and sorts deps without dropping existing ones", () => {
+test("withScaffoldDeps injects and sorts deps without dropping existing ones", () => {
   const base = JSON.stringify({ dependencies: { react: "19.0.0" } });
-  const redux = JSON.parse(withStateLibDeps(base, "redux"));
+  const redux = JSON.parse(withScaffoldDeps(base, "redux"));
   assert.deepEqual(Object.keys(redux.dependencies), [...Object.keys(redux.dependencies)].sort());
   assert.ok(redux.dependencies.react);
   assert.ok(redux.dependencies["@reduxjs/toolkit"]);
+});
+
+test("withScaffoldDeps default api mode does NOT inject SDK deps or scripts", () => {
+  const base = JSON.stringify({ dependencies: { react: "19.0.0" }, scripts: { dev: "vite" } });
+  const pkg = JSON.parse(withScaffoldDeps(base, "redux")); // apiMode defaults to "client"
+  assert.ok(!pkg.dependencies.axios);
+  assert.ok(!pkg.devDependencies?.orval);
+  assert.ok(!pkg.scripts?.["generate-sdk"]);
+});
+
+test("withScaffoldDeps with sdk injects axios + orval + sdk scripts", () => {
+  const base = JSON.stringify({ dependencies: { react: "19.0.0" }, scripts: { dev: "vite" } });
+  const pkg = JSON.parse(withScaffoldDeps(base, "redux", "sdk"));
+  assert.ok(pkg.dependencies.axios);
+  assert.ok(pkg.devDependencies.orval);
+  assert.equal(pkg.scripts["generate-sdk"], "orval --config ./orval.config.ts");
+  assert.equal(pkg.scripts.preinstall, "node scripts/check-node.cjs");
+  assert.equal(pkg.scripts.dev, "vite"); // existing scripts preserved
+});
+
+test("scaffold default (client) wires the hand-rolled api and no orval pipeline", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  const result = await scaffoldFoundation({ projectRoot: root, install: noInstall });
+  assert.equal(result.apiMode, "client");
+  assert.equal(readState(root).foundation.apiMode, "client");
+  assert.ok(existsSync(join(root, "src/api/client.ts")));
+  assert.ok(!existsSync(join(root, "src/api/axios-instance.ts")));
+  assert.ok(!existsSync(join(root, "orval.config.ts")));
+});
+
+test("scaffold --sdk overlays the orval pipeline and removes the hand-rolled client", async () => {
+  const root = tempRoot();
+  writeState(root, defaultState("claude-code"));
+  const result = await scaffoldFoundation({ projectRoot: root, install: noInstall, apiMode: "sdk" });
+  assert.equal(result.apiMode, "sdk");
+  assert.equal(readState(root).foundation.apiMode, "sdk");
+  // SDK transport overlaid, hand-rolled transport removed.
+  assert.ok(existsSync(join(root, "src/api/axios-instance.ts")));
+  assert.ok(existsSync(join(root, "orval.config.ts")));
+  assert.ok(existsSync(join(root, "orval-transformer.cjs")));
+  assert.ok(existsSync(join(root, "scripts/check-node.cjs")));
+  assert.ok(!existsSync(join(root, "src/api/client.ts")));
+  // package.json gets axios + orval + sdk scripts.
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  assert.ok(pkg.dependencies.axios);
+  assert.ok(pkg.devDependencies.orval);
+  assert.ok(pkg.scripts["generate-sdk"]);
+});
+
+test("templateHash differs between client and sdk api modes", async () => {
+  const a = tempRoot();
+  const b = tempRoot();
+  writeState(a, defaultState("claude-code"));
+  writeState(b, defaultState("claude-code"));
+  const ra = await scaffoldFoundation({ projectRoot: a, install: noInstall, apiMode: "client" });
+  const rb = await scaffoldFoundation({ projectRoot: b, install: noInstall, apiMode: "sdk" });
+  assert.notEqual(ra.templateHash, rb.templateHash);
 });
 
 test("defaultInstall runs pnpm install and throws on non-zero exit", async () => {

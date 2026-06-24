@@ -1,5 +1,6 @@
 dist/
 files/
+sdk-variant/
 definitions/
 docs/
 *.tgz
