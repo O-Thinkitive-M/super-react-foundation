@@ -288,3 +288,21 @@ const Chart = lazy(() => import("@/components/Chart"));
 - Always `encodeURIComponent` user-supplied values; rely on `URLSearchParams` (via `useSearchParams`/`createSearchParams`) for encoding.
 - Build URLs from `src/router/paths.ts` helpers — no string concatenation of routes in components.
 - Default values live in code, not the URL: omit a param to mean "default" rather than writing the default into the link.
+
+## What the scaffold seeds (and how to replace it)
+
+The foundation ships a **working** router, not an empty folder:
+
+| File | Role |
+|------|------|
+| `src/router/router.tsx` | the route tree (`createBrowserRouter`) |
+| `src/router/paths.ts` | typed path constants |
+| `src/router/guards.tsx` | `RequireAuth` / `RequireRole` (read `@/lib/auth`) |
+| `src/router/RootLayout.tsx` / `AppLayout.tsx` | shared chrome; `AppLayout` holds `<Suspense>` |
+| `src/router/RouteError.tsx` | shared `errorElement` + 404 |
+
+`/` redirects to `/dashboard`, which lazy-loads a **deletable demo page** at
+`src/features/_demo/pages/DashboardPage.tsx`. Auth is a **demo stub** in
+`src/lib/auth.ts` (returns a signed-in admin) so the app renders; replace it to
+enforce. To replace the demo: add your feature's lazy route, repoint `/dashboard`
+(or add routes), then delete `src/features/_demo/`. See `how-it-works.md`.

@@ -38,17 +38,21 @@ export async function runScaffold(opts: {
   noInstall: boolean;
   force: boolean;
   state?: string;
+  sdk?: boolean;
 }): Promise<number> {
   const stateLib = await resolveStateLib(opts.state);
+  const apiMode = opts.sdk ? "sdk" : "client";
   const install = opts.noInstall ? async (): Promise<void> => {} : undefined;
   const result = await scaffoldFoundation({
     projectRoot: opts.projectRoot,
     force: opts.force,
     install,
     stateLib,
+    apiMode,
   });
+  const apiLabel = result.apiMode === "sdk" ? "generated SDK (Orval)" : "typed HTTP client";
   console.log(
-    `super-react-foundation: foundation scaffolded with ${result.stateLib} ` +
+    `super-react-foundation: foundation scaffolded with ${result.stateLib} + ${apiLabel} ` +
       `(${result.filesWritten.length} written, ${result.filesSkipped.length} skipped).`,
   );
   console.log(renderDashboard(readState(opts.projectRoot)));

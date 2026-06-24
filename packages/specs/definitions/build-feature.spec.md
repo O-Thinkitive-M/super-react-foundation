@@ -23,7 +23,7 @@ One command takes an approved feature plan all the way to working, tested code, 
 `/build-feature patient-dashboard`
 
 ## Best Practices
-Build only to the acceptance criteria in the feature plan. Reuse the project's existing primitives and the patterns in `project-setup/`.
+Build only to the acceptance criteria in the feature plan. Reuse the project's existing primitives and the patterns in `project-setup/`. If the feature adds a script, env var, or new `project-setup/` doc, offer to sync the project `README.md`'s managed block per `project-setup/readme-maintenance.md` — **always ask the user first**, update only the marked block, never duplicate the file.
 
 ## Common Mistakes
 Building beyond the plan's scope. Skipping tests, validation, or error/loading states.

@@ -17,6 +17,7 @@ const { positionals, values } = parseArgs({
     "no-install": { type: "boolean", default: false },
     force: { type: "boolean", default: false },
     state: { type: "string" },
+    sdk: { type: "boolean", default: false },
   },
 });
 
@@ -47,6 +48,7 @@ try {
         noInstall: values["no-install"] as boolean,
         force: values.force as boolean,
         state: values.state as string | undefined,
+        sdk: values.sdk as boolean,
       });
       break;
     case "gate":

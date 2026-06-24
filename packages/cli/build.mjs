@@ -22,11 +22,12 @@ await build({
 chmodSync(join(root, "dist", "cli.js"), 0o755);
 
 // Ship the data dirs adjacent to dist so the loaders' join(here,"..",<dir>) resolves:
-// here === packages/cli/dist  ->  ../files | ../definitions | ../docs
+// here === packages/cli/dist  ->  ../files | ../sdk-variant | ../definitions | ../docs
 // Clean each destination first so renamed/removed source files don't linger in
 // the build output (and thus never get scaffolded into user projects).
 for (const [src, destName] of [
   [join(repo, "packages", "templates", "files"), "files"],
+  [join(repo, "packages", "templates", "sdk-variant"), "sdk-variant"],
   [join(repo, "packages", "specs", "definitions"), "definitions"],
   [join(repo, "packages", "foundation-docs", "docs"), "docs"],
 ]) {

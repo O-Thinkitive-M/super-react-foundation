@@ -2,7 +2,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { templateRoot, listTemplateFiles } from "@super-react-foundation/templates";
+import {
+  templateRoot,
+  listTemplateFiles,
+  listSdkVariantFiles,
+  sdkVariantRoot,
+  SDK_REPLACED_FILES,
+} from "@super-react-foundation/templates";
 
 test("templateRoot points at an existing files directory", () => {
   assert.ok(existsSync(templateRoot()));
@@ -65,4 +71,68 @@ test("scaffold ships the full end-to-end folder structure (each folder documente
   }
   // The feature pattern ships a copy-me skeleton with a public barrel.
   assert.ok(files.includes("src/features/_template/index.ts"));
+});
+
+test("scaffold seeds a working router (config-driven, foundation-docs convention)", () => {
+  const files = listTemplateFiles();
+  for (const f of [
+    "src/router/router.tsx",
+    "src/router/paths.ts",
+    "src/router/guards.tsx",
+    "src/router/RootLayout.tsx",
+    "src/router/AppLayout.tsx",
+    "src/router/RouteError.tsx",
+    "src/lib/auth.ts",
+  ]) {
+    assert.ok(files.includes(f), `missing router file: ${f}`);
+  }
+});
+
+test("scaffold seeds the deletable demo page as a lazy route module", () => {
+  assert.ok(listTemplateFiles().includes("src/features/_demo/pages/DashboardPage.tsx"));
+});
+
+test("scaffold seeds a working i18n registry with demo category files", () => {
+  const files = listTemplateFiles();
+  for (const f of [
+    "src/i18n/index.ts",
+    "src/i18n/react-i18next.d.ts",
+    "src/i18n/en/index.ts",
+    "src/i18n/en/buttons.ts",
+    "src/i18n/en/titles.ts",
+    "src/i18n/en/labels.ts",
+    "src/i18n/en/descriptions.ts",
+  ]) {
+    assert.ok(files.includes(f), `missing i18n file: ${f}`);
+  }
+});
+
+test("default API ships the hand-rolled typed client (no orval pipeline in the base)", () => {
+  const files = listTemplateFiles();
+  for (const f of [
+    "src/api/client.ts",
+    "src/api/errors.ts",
+    "src/api/query-keys.ts",
+    "src/api/query-client.ts",
+  ]) {
+    assert.ok(files.includes(f), `missing api file: ${f}`);
+  }
+  // The orval pipeline is NOT part of the default tree — it is the SDK overlay.
+  assert.ok(!files.includes("orval.config.ts"));
+  assert.ok(!files.includes("src/api/axios-instance.ts"));
+});
+
+test("SDK variant overlay holds the orval pipeline files", () => {
+  assert.ok(existsSync(sdkVariantRoot()));
+  const files = listSdkVariantFiles();
+  for (const f of [
+    "src/api/axios-instance.ts",
+    "orval.config.ts",
+    "orval-transformer.cjs",
+    "scripts/check-node.cjs",
+  ]) {
+    assert.ok(files.includes(f), `missing sdk variant file: ${f}`);
+  }
+  // The overlay replaces the hand-rolled transport.
+  assert.ok(SDK_REPLACED_FILES.includes("src/api/client.ts"));
 });

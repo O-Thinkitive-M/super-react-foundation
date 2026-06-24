@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import {
   foundationDocsRoot,
@@ -8,15 +8,28 @@ import {
   stateManagementSource,
 } from "@super-react-foundation/foundation-docs";
 
-test("foundationDocsRoot exists and lists the eleven core docs, sorted by dest", () => {
+test("foundationDocsRoot lists every doc, sorted by dest, with the two state-management variants collapsed to one", () => {
   assert.ok(existsSync(join(foundationDocsRoot(), "architecture.md")));
   const docs = listFoundationDocs();
   const dests = docs.map((d) => d.dest);
-  assert.equal(docs.length, 11);
-  assert.ok(dests.includes("routing.md"));
-  assert.ok(dests.includes("deployment.md"));
-  assert.ok(dests.includes("data-structures.md"));
-  assert.ok(dests.includes("state-management.md"));
+
+  // Derive the expected count from disk so adding a doc doesn't break the test:
+  // every .md is one dest, except the two state-management.* sources collapse to one.
+  const mdFiles = readdirSync(foundationDocsRoot()).filter((f) => f.endsWith(".md"));
+  const stateVariants = mdFiles.filter((f) => f.startsWith("state-management.")).length;
+  const expected = mdFiles.length - stateVariants + 1; // collapse N variants -> 1 canonical
+  assert.equal(docs.length, expected);
+
+  // Spot-check that the full topic set (including the ported Set-A docs) is seeded.
+  for (const d of [
+    "routing.md", "deployment.md", "data-structures.md", "state-management.md", "how-it-works.md",
+    "tech-stack.md", "config-registries.md", "responsive-system.md", "data-display.md",
+    "layout-and-overlays.md", "accessibility.md", "i18n.md", "datetime-timezone.md",
+    "security.md", "cross-browser.md", "performance.md", "quality-gates.md",
+    "mcp-integration.md", "theme.md", "forms.md", "project-plan.md", "foundation-checklist.md",
+  ]) {
+    assert.ok(dests.includes(d), `missing seeded doc: ${d}`);
+  }
   assert.deepEqual(dests, [...dests].sort());
 });
 

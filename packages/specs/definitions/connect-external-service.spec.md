@@ -24,7 +24,7 @@ Integrations should be added consistently — packages, configuration, services,
 `/connect-external-service stripe`
 
 ## Best Practices
-Keep secrets in untracked env files. Add the integration across the project consistently.
+Keep secrets in untracked env files. Add the integration across the project consistently. When the integration adds env vars or scripts, offer to sync the project `README.md`'s managed block per `project-setup/readme-maintenance.md` — **always ask the user first**, update only the marked block, never duplicate the file.
 
 ## Common Mistakes
 Committing API keys. Wiring the SDK directly into components instead of a service.

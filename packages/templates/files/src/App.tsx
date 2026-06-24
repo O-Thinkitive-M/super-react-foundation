@@ -1,11 +1,8 @@
-import { Container, Typography } from "@mui/material";
+// App root — mounts the router. The screens themselves live behind the routes in
+// src/router/. Keep this thin; app-wide providers belong in main.tsx.
+import { RouterProvider } from "react-router-dom";
+import { router } from "@/router/router";
 
 export function App() {
-  return (
-    <Container>
-      <Typography variant="h4" component="h1">
-        super-react-foundation foundation ready
-      </Typography>
-    </Container>
-  );
+  return <RouterProvider router={router} />;
 }
