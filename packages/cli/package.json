@@ -1,6 +1,6 @@
 {
   "name": "super-react-foundation",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Guided React engineering for AI coding agents — a prompt pack + CLI that enforces a strict analyze → scaffold → build → integrate → review workflow.",
   "keywords": ["react", "ai", "agent", "claude-code", "scaffold", "prompt-pack", "cli", "code-generation"],
   "license": "MIT",
@@ -9,7 +9,7 @@
   "bugs": { "url": "https://github.com/O-Thinkitive-M/super-react-foundation/issues" },
   "type": "module",
   "bin": { "super-react-foundation": "dist/cli.js" },
-  "files": ["dist", "files", "sdk-variant", "definitions", "docs"],
+  "files": ["dist", "files", "sdk-variant", "definitions", "docs", "README.md"],
   "engines": { "node": ">=22.18" },
   "scripts": {
     "build": "node build.mjs",
